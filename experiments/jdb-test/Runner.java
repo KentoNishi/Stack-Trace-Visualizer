@@ -1,11 +1,9 @@
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.io.FileWriter;
 
 public class Runner {
     private static Process shell;
@@ -45,6 +43,14 @@ public class Runner {
             String[] actionSplit = action.split(" ");
             if (actionSplit.length > 1) {
                 action = actionSplit[1].replaceAll("[^a-zA-Z0-9!@\\.,]", "");
+            }
+            if (!action.equals("entered") && !action.equals("exited")) {
+                continue;
+            }
+            String jdkInternal = "jdk.internal";
+            if (method.length() > jdkInternal.length()
+                    && method.substring(0, jdkInternal.length()).equals(jdkInternal)) {
+                continue;
             }
             System.out.println(action + " " + method);
         }
