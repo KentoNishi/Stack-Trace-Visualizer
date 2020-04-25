@@ -5,41 +5,80 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.io.FileWriter;
 
 public class Runner {
+    private static Process shell;
+    private static PrintWriter stdin;
+    private static Scanner stdout;
+
     public static void main(String[] args) throws InterruptedException {
-        List<String> commandLine = new ArrayList<String>();
-        commandLine.add("jdb");
-        ProcessBuilder builder = new ProcessBuilder(commandLine);
-        builder.redirectErrorStream(true);
         try {
-            /*
-             * builder.redirectInput(ProcessBuilder.Redirect.INHERIT);
-             * builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-             */
-            Process process = builder.start();
-            OutputStream os = process.getOutputStream();
-            PrintWriter writer = new PrintWriter(os);
-            writer.write("stop in Test.main\n");
-            writer.flush();
-            writer.write("run Test\n");
-            writer.flush();
-            writer.write("clear Test.main\n");
-            writer.flush();
-            writer.write("resume\n");
-            writer.flush();
-            Scanner reader = new Scanner(process.getInputStream()).useDelimiter("\\n");
-            while (reader.hasNext()) {
-                String result = reader.next();
-                System.out.println(result);
-                writer.flush();
-            }
-            reader.close();
-            writer.close();
-            process.waitFor();
+            shell = getShell();
+            stdin = getSTDIN();
+            stdout = getSTDOUT();
+            String[] commands = { "stop in Test.main", "run Test", "clear Test.main", "trace go methods 0x1",
+                    "resume" };
+            writeCommands(commands);
+            List<String> outputs = getOutputs();
+            printPrettyTrace(outputs);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    public static void printPrettyTrace(List<String> lines) {
+        for (String line : lines) {
+            String[] tokenized = line.split(",");
+            if (tokenized.length < 4) {
+                continue;
+            }
+            int methodIndex = -1;
+            for (int i = 0; i < tokenized.length; i++) {
+                if (tokenized[i].contains("thread=main")) {
+                    methodIndex = i + 1;
+                    break;
+                }
+            }
+            String method = tokenized[methodIndex].replaceAll("\\s", "");
+            String action = tokenized[0].split(" ")[1].replaceAll("[^a-zA-Z0-9!@\\.,]", "");
+            System.out.println(action + " " + method);
+        }
+    }
+
+    private static void writeCommands(String[] strs) {
+        for (String s : strs) {
+            writeToConsole(s + "\n");
+        }
+    }
+
+    private static List<String> getOutputs() {
+        List<String> outputs = new ArrayList<String>();
+        while (stdout.hasNext()) {
+            String result = stdout.next();
+            outputs.add(result);
+        }
+        return outputs;
+    }
+
+    private static Scanner getSTDOUT() {
+        return new Scanner(shell.getInputStream()).useDelimiter("\\n");
+    }
+
+    private static PrintWriter getSTDIN() {
+        OutputStream os = shell.getOutputStream();
+        PrintWriter stdin = new PrintWriter(os);
+        return stdin;
+    }
+
+    private static Process getShell() throws IOException {
+        ProcessBuilder builder = new ProcessBuilder("jdb");
+        builder.redirectErrorStream(true);
+        return builder.start();
+    }
+
+    private static void writeToConsole(String str) {
+        stdin.write(str);
+        stdin.flush();
     }
 }

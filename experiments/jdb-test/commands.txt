@@ -1,4 +1,0 @@
-stop in Test.main(String[])
-run Test
-trace go methods 0x1
-resume
