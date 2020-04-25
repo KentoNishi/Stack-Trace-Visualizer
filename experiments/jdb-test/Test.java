@@ -9,5 +9,7 @@ public class Test {
 
     public static void test() {
         System.out.println("Test");
+        Test2 t = new Test2();
+        t.hello();
     }
 }

@@ -6,26 +6,39 @@ import java.util.List;
 import java.util.Scanner;
 
 public class Runner {
-    private static Process shell;
-    private static PrintWriter stdin;
-    private static Scanner stdout;
+    private Process shell;
+    private PrintWriter stdin;
+    private Scanner stdout;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
+        Runner runner = new Runner();
+        List<String> results = runner.getTrace("Test");
+        for (String line : results) {
+            System.out.println(line);
+        }
+    }
+
+    public Runner() {
         try {
             shell = getShell();
             stdin = getSTDIN();
             stdout = getSTDOUT();
-            String[] commands = { "stop in Test.main", "run Test", "clear Test.main", "trace go methods 0x1",
-                    "resume" };
-            writeCommands(commands);
-            List<String> outputs = getOutputs();
-            printPrettyTrace(outputs);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void printPrettyTrace(List<String> lines) {
+    public List<String> getTrace(String className) {
+        String[] commands = { "stop in " + className + ".main", "run " + className, "clear " + className + ".main",
+                "trace go methods 0x1", "resume" };
+        writeCommands(commands);
+        List<String> outputs = getOutputs();
+        List<String> results = printPrettyTrace(outputs);
+        return results;
+    }
+
+    private List<String> printPrettyTrace(List<String> lines) {
+        List<String> outputs = new ArrayList<String>();
         for (String line : lines) {
             String[] tokenized = line.split(",");
             if (tokenized.length < 2) {
@@ -38,6 +51,9 @@ public class Runner {
                     break;
                 }
             }
+            if (methodIndex == -1) {
+                continue;
+            }
             String method = tokenized[methodIndex].replaceAll("\\s", "");
             String action = tokenized[0];
             String[] actionSplit = action.split(" ");
@@ -47,22 +63,23 @@ public class Runner {
             if (!action.equals("entered") && !action.equals("exited")) {
                 continue;
             }
-            String jdkInternal = "jdk.internal";
+            String jdkInternal = "jdk";
             if (method.length() > jdkInternal.length()
                     && method.substring(0, jdkInternal.length()).equals(jdkInternal)) {
                 continue;
             }
-            System.out.println(action + " " + method);
+            outputs.add(action + " " + method);
         }
+        return outputs;
     }
 
-    private static void writeCommands(String[] strs) {
+    private void writeCommands(String[] strs) {
         for (String s : strs) {
             writeToConsole(s + "\n");
         }
     }
 
-    private static List<String> getOutputs() {
+    private List<String> getOutputs() {
         List<String> outputs = new ArrayList<String>();
         while (stdout.hasNext()) {
             String result = stdout.next();
@@ -71,23 +88,23 @@ public class Runner {
         return outputs;
     }
 
-    private static Scanner getSTDOUT() {
+    private Scanner getSTDOUT() {
         return new Scanner(shell.getInputStream()).useDelimiter("\\n");
     }
 
-    private static PrintWriter getSTDIN() {
+    private PrintWriter getSTDIN() {
         OutputStream os = shell.getOutputStream();
         PrintWriter stdin = new PrintWriter(os);
         return stdin;
     }
 
-    private static Process getShell() throws IOException {
+    private Process getShell() throws IOException {
         ProcessBuilder builder = new ProcessBuilder("jdb");
         builder.redirectErrorStream(true);
         return builder.start();
     }
 
-    private static void writeToConsole(String str) {
+    private void writeToConsole(String str) {
         stdin.write(str);
         stdin.flush();
     }
