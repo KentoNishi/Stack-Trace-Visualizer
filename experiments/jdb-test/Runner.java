@@ -30,7 +30,7 @@ public class Runner {
     public static void printPrettyTrace(List<String> lines) {
         for (String line : lines) {
             String[] tokenized = line.split(",");
-            if (tokenized.length < 4) {
+            if (tokenized.length < 2) {
                 continue;
             }
             int methodIndex = -1;
@@ -41,7 +41,11 @@ public class Runner {
                 }
             }
             String method = tokenized[methodIndex].replaceAll("\\s", "");
-            String action = tokenized[0].split(" ")[1].replaceAll("[^a-zA-Z0-9!@\\.,]", "");
+            String action = tokenized[0];
+            String[] actionSplit = action.split(" ");
+            if (actionSplit.length > 1) {
+                action = actionSplit[1].replaceAll("[^a-zA-Z0-9!@\\.,]", "");
+            }
             System.out.println(action + " " + method);
         }
     }
