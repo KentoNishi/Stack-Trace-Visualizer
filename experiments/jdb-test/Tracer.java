@@ -86,12 +86,18 @@ public class Tracer {
             if (!action.equals("entered") && !action.equals("exited")) {
                 continue;
             }
-            String jdkInternal = "jdk";
-            if (method.length() > jdkInternal.length()
-                    && method.substring(0, jdkInternal.length()).equals(jdkInternal)) {
+            if (method.startsWith("jdk")) {
                 continue;
             }
-            outputs.add(action + " " + method);
+            if (action.equals("entered")) {
+                outputs.add("Entered Method: " + method);
+            } else {
+                String returnMessage = "Method exited: return value = ";
+                if (tokenized[0].startsWith(returnMessage)) {
+                    String returnValue = tokenized[0].substring(returnMessage.length(), tokenized[0].length());
+                    outputs.add("Exited Method: " + method + ", Returned: " + returnValue);
+                }
+            }
         }
         return outputs;
     }
@@ -132,6 +138,7 @@ public class Tracer {
     private static void runCompiler(File file) throws IOException {
         List<String> args = new ArrayList<String>();
         args.add("javac");
+        args.add("-g");
         File[] files = file.listFiles();
         for (File f : files) {
             if (!f.getName().endsWith(".java")) {
