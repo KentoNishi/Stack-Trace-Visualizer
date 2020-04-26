@@ -1,6 +1,5 @@
 public class Playground {
     public static void main(String[] args) {
-        // To compile all: javac -sourcepath . *.java
         System.out.println("Initializing Tracer...");
         Tracer tracer = new Tracer("TestProgram.class");
         System.out.println("Tracing Stack...");

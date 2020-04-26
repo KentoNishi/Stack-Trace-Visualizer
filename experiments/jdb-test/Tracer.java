@@ -17,9 +17,18 @@ public class Tracer {
     }
 
     public Tracer(String classPath) {
+        this(classPath, true);
+    }
+
+    public Tracer(String classPath, boolean compile) {
         try {
             classPath = new File(classPath).getAbsolutePath();
             File path = new File(classPath);
+            File parentDir = new File(path.getParentFile().getCanonicalPath());
+            if (compile) {
+                System.out.println("Compiling files...");
+                runCompiler(parentDir);
+            }
             if (!path.isFile()) {
                 throw new IllegalArgumentException(
                         "The class specified does not exist. Make sure you inputted the correct .class file.");
@@ -34,7 +43,7 @@ public class Tracer {
             if (!fileType.equals("class")) {
                 throw new IllegalArgumentException("The file specified is not a compiled .class file.");
             }
-            shell = getShell(new File(path.getParentFile().getCanonicalPath()));
+            shell = getShell(parentDir);
             stdin = getSTDIN();
             stdout = getSTDOUT();
         } catch (IOException e) {
@@ -118,6 +127,19 @@ public class Tracer {
         builder.redirectErrorStream(true);
         builder.directory(file);
         return builder.start();
+    }
+
+    private static void runCompiler(File file) throws IOException {
+        String[] args = { "javac", "-sourcepath", ".", "*.java" };
+        ProcessBuilder builder = new ProcessBuilder(args);
+        builder.redirectErrorStream(true);
+        builder.directory(file);
+        try {
+            Process process = builder.start();
+            process.waitFor();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private void writeToConsole(String str) {
