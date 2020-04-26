@@ -9,14 +9,16 @@
             "name": "CodeLens (Launch) - Playground",
             "request": "launch",
             "mainClass": "Playground",
-            "projectName": "JUnit-GUI_32ca2166"
+            "projectName": "JUnit-GUI_32ca2166",
+            "cwd": "${fileDirname}"
         },
         {
             "type": "java",
             "name": "CodeLens (Launch) - Runner",
             "request": "launch",
             "mainClass": "Runner",
-            "projectName": "JUnit-GUI_32ca2166"
+            "projectName": "JUnit-GUI_32ca2166",
+            "cwd": "${fileDirname}"
         },
         {
             "type": "java",
