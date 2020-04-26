@@ -1,2 +1,2 @@
-# JUnit GUI
-An interactive graphical interface to track and manage JUnit tests.
+# Stack Trace Visualizer
+An interactive graphical interface to visualize the Java call stack.

@@ -3,7 +3,7 @@
 * Project Manager: `Kento Nishi`
 * Date: `April 28th, 2020`
 * Project Overview:
-    > 
+    > The program keeps track of every method call in a Java program to generate a tree-like view showing every step in the program. The program will have a graphical interface for users to profile the execution of their Java programs. The application will mainly serve Java developers in making debugging easier.
 * Project Team: `N/A`
 * Challenges:
     * Judging from research so far, the program may require clever workarounds within the code to function properly.
