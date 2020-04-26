@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -26,7 +27,7 @@ public class Tracer {
             File path = new File(classPath);
             File parentDir = new File(path.getParentFile().getCanonicalPath());
             if (compile) {
-                System.out.println("Compiling files...");
+                System.out.println("Searching for files...");
                 runCompiler(parentDir);
             }
             if (!path.isFile()) {
@@ -130,13 +131,29 @@ public class Tracer {
     }
 
     private static void runCompiler(File file) throws IOException {
-        String[] args = { "javac", "-sourcepath", ".", "*.java" };
+        List<String> args = new ArrayList<String>();
+        args.add("javac");
+        File[] files = file.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".java");
+            }
+        });
+        for (File f : files) {
+            if (!f.getAbsolutePath()
+                    .equals(new File(Tracer.class.getProtectionDomain().getCodeSource().getLocation().getPath())
+                            .getAbsolutePath())) {
+                args.add(f.getName());
+                System.out.println("Compiling " + f.getName() + "...");
+            }
+        }
         ProcessBuilder builder = new ProcessBuilder(args);
         builder.redirectErrorStream(true);
         builder.directory(file);
         try {
             Process process = builder.start();
             process.waitFor();
+
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

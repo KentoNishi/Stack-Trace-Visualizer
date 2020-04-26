@@ -1,4 +1,3 @@
-
 public class TestClass {
     public int testField;
 
