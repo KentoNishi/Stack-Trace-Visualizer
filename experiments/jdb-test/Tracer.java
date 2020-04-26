@@ -1,5 +1,4 @@
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -133,19 +132,13 @@ public class Tracer {
     private static void runCompiler(File file) throws IOException {
         List<String> args = new ArrayList<String>();
         args.add("javac");
-        File[] files = file.listFiles(new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".java");
-            }
-        });
+        File[] files = file.listFiles();
         for (File f : files) {
-            if (!f.getAbsolutePath()
-                    .equals(new File(Tracer.class.getProtectionDomain().getCodeSource().getLocation().getPath())
-                            .getAbsolutePath())) {
-                args.add(f.getName());
-                System.out.println("Compiling " + f.getName() + "...");
+            if (!f.getName().endsWith(".java")) {
+                continue;
             }
+            args.add(f.getName());
+            System.out.println("Compiling " + f.getName() + "...");
         }
         ProcessBuilder builder = new ProcessBuilder(args);
         builder.redirectErrorStream(true);
