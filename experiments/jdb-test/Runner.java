@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -9,18 +10,26 @@ public class Runner {
     private Process shell;
     private PrintWriter stdin;
     private Scanner stdout;
+    private String className;
 
     public static void main(String[] args) {
-        Runner runner = new Runner();
-        List<String> results = runner.getTrace("Test");
+        Runner runner;
+        runner = new Runner("C:\\Users\\kento\\Documents\\GitHub\\JUnit-GUI\\experiments\\jdb-test\\Test.class");
+        List<String> results = runner.getTrace();
         for (String line : results) {
             System.out.println(line);
         }
     }
 
-    public Runner() {
+    public Runner() throws IOException {
+        this(new File(new File(".").getAbsolutePath()).getAbsolutePath());
+    }
+
+    public Runner(String classPath) {
         try {
-            shell = getShell();
+            File path = new File(classPath);
+            className = path.getName().split("\\.")[0];
+            shell = getShell(new File(path.getParentFile().getCanonicalPath()));
             stdin = getSTDIN();
             stdout = getSTDOUT();
         } catch (IOException e) {
@@ -28,7 +37,7 @@ public class Runner {
         }
     }
 
-    public List<String> getTrace(String className) {
+    public List<String> getTrace() {
         String[] commands = { "stop in " + className + ".main", "run " + className, "clear " + className + ".main",
                 "trace go methods 0x1", "resume" };
         writeCommands(commands);
@@ -98,9 +107,10 @@ public class Runner {
         return stdin;
     }
 
-    private Process getShell() throws IOException {
+    private Process getShell(File file) throws IOException {
         ProcessBuilder builder = new ProcessBuilder("jdb");
         builder.redirectErrorStream(true);
+        builder.directory(file);
         return builder.start();
     }
 
