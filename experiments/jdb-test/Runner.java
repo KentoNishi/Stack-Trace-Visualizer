@@ -12,15 +12,6 @@ public class Runner {
     private Scanner stdout;
     private String className;
 
-    public static void main(String[] args) {
-        Runner runner;
-        runner = new Runner("C:\\Users\\kento\\Documents\\GitHub\\JUnit-GUI\\experiments\\jdb-test\\Test.class");
-        List<String> results = runner.getTrace();
-        for (String line : results) {
-            System.out.println(line);
-        }
-    }
-
     public Runner() throws IOException {
         this(new File(new File(".").getAbsolutePath()).getAbsolutePath());
     }
@@ -94,6 +85,7 @@ public class Runner {
             String result = stdout.next();
             outputs.add(result);
         }
+        stdout.close();
         return outputs;
     }
 
