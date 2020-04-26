@@ -6,17 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Runner {
+public class Tracer {
     private Process shell;
     private PrintWriter stdin;
     private Scanner stdout;
     private String className;
 
-    public Runner() throws IOException {
+    public Tracer() throws IOException {
         this(new File(new File(".").getAbsolutePath()).getAbsolutePath());
     }
 
-    public Runner(String classPath) {
+    public Tracer(String classPath) {
         try {
             File path = new File(classPath);
             className = path.getName().split("\\.")[0];
@@ -28,13 +28,13 @@ public class Runner {
         }
     }
 
-    public List<String> getTrace() {
+    public String[] getTrace() {
         String[] commands = { "stop in " + className + ".main", "run " + className, "clear " + className + ".main",
                 "trace go methods 0x1", "resume" };
         writeCommands(commands);
         List<String> outputs = getOutputs();
         List<String> results = printPrettyTrace(outputs);
-        return results;
+        return (String[]) results.toArray(new String[0]);
     }
 
     private List<String> printPrettyTrace(List<String> lines) {
