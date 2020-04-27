@@ -2,6 +2,7 @@
 * Date: `April 28th, 2020`
 * To: `N/A`
 * Subject: `Status Report - Period 3`
+* Project Name: `Stack Trace Visualizer`
 * Accomplishments:
     * Conceptualized project
     * Created project repository
