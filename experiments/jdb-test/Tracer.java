@@ -51,17 +51,18 @@ public class Tracer {
         }
     }
 
-    public String[] getTrace() {
+    public StackEvent[] getTrace() {
+        System.out.println("Tracing Stack...");
         String[] commands = { "stop in " + className + ".main", "run " + className, "clear " + className + ".main",
                 "trace go methods 0x1", "resume" };
         writeCommands(commands);
         List<String> outputs = getOutputs();
-        List<String> results = printPrettyTrace(outputs);
-        return (String[]) results.toArray(new String[0]);
+        List<StackEvent> results = formatTrace(outputs);
+        return (StackEvent[]) results.toArray(new StackEvent[0]);
     }
 
-    private List<String> printPrettyTrace(List<String> lines) {
-        List<String> outputs = new ArrayList<String>();
+    private List<StackEvent> formatTrace(List<String> lines) {
+        List<StackEvent> outputs = new ArrayList<StackEvent>();
         for (String line : lines) {
             String[] tokenized = line.split(",");
             if (tokenized.length < 2) {
@@ -90,12 +91,19 @@ public class Tracer {
                 continue;
             }
             if (action.equals("entered")) {
-                outputs.add("Entered Method: " + method);
+                StackEvent event = new StackEvent();
+                event.setEventMethod(method);
+                event.setEventType("entered");
+                outputs.add(event);
             } else {
                 String returnMessage = "Method exited: return value = ";
                 if (tokenized[0].startsWith(returnMessage)) {
                     String returnValue = tokenized[0].substring(returnMessage.length(), tokenized[0].length());
-                    outputs.add("Exited Method: " + method + ", Returned: " + returnValue);
+                    StackEvent event = new StackEvent();
+                    event.setEventMethod(method);
+                    event.setEventType("exited");
+                    event.setReturnValue(returnValue);
+                    outputs.add(event);
                 }
             }
         }

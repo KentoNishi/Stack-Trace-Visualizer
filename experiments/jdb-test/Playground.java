@@ -2,10 +2,11 @@ public class Playground {
     public static void main(String[] args) {
         System.out.println("Initializing Tracer...");
         Tracer tracer = new Tracer("../TestPrograms/TestProgram.class");
-        System.out.println("Tracing Stack...");
-        String[] stackTrace = tracer.getTrace();
+        // C:/Users/kento/Documents/GitHub/APCS/JMCh19_SafeTrade/SafeTrade.class
+
+        StackEvent[] stackTrace = tracer.getTrace();
         System.out.println("Stack Trace:");
-        for (String line : stackTrace) {
+        for (StackEvent line : stackTrace) {
             System.out.println(line);
         }
     }
