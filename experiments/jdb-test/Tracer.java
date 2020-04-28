@@ -2,14 +2,15 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 public class Tracer {
     private Process shell;
-    private PrintWriter stdin;
-    private Scanner stdout;
+    private PrintWriter jdbin;
+    private Scanner jdbout;
     private String className;
     private File parentDirectory;
 
@@ -25,11 +26,11 @@ public class Tracer {
         try {
             classPath = new File(classPath).getAbsolutePath();
             File path = new File(classPath);
-            File parentDir = new File(path.getParentFile().getCanonicalPath());
-            this.parentDirectory = parentDir;
+            File parentDirectory = new File(path.getParentFile().getCanonicalPath());
+            this.parentDirectory = parentDirectory;
             if (compile) {
                 System.out.println("Searching for files...");
-                runCompiler(parentDir);
+                runCompiler();
             }
             if (!path.isFile()) {
                 throw new IllegalArgumentException(
@@ -45,46 +46,20 @@ public class Tracer {
             if (!fileType.equals("class")) {
                 throw new IllegalArgumentException("The file specified is not a compiled .class file.");
             }
-            shell = getShell(parentDir);
-            stdin = getSTDIN();
-            stdout = getSTDOUT();
+            shell = getShell(parentDirectory);
+            jdbin = getSTDIN();
+            jdbout = getSTDOUT();
+            try {
+                runProgram();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public StackEvent[] getTrace(String mode) {
-        if (mode.equals("cli")) {
-            ArrayList<String> inputs = this.runWithKeylogger();
-            return this.getTrace(inputs);
-        } else if (mode.equalsIgnoreCase("gui")) {
-            return this.getTrace(new ArrayList<String>());
-        }
-        throw new IllegalArgumentException("The application mode is invalid.");
-    }
-
-    private ArrayList<String> runWithKeylogger() {
-        System.out.println("Running with CLI...\n");
-        List<String> flags = new ArrayList<String>();
-        flags.add("java");
-        flags.add(this.className);
-        ProcessBuilder builder = new ProcessBuilder(flags);
-        builder.redirectErrorStream(true);
-        builder.directory(this.parentDirectory);
-        builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
-        RunnableProcess runnableProcess = new RunnableProcess(builder);
-        Thread processThread = new Thread(runnableProcess);
-        processThread.start();
-        RunnableReader runnableReader = new RunnableReader(runnableProcess, processThread);
-        Thread readerThread = new Thread(runnableReader);
-        readerThread.setDaemon(true);
-        readerThread.start();
-        while (processThread.isAlive()) {
-        }
-        return runnableReader.getLines();
-    }
-
-    private StackEvent[] getTrace(List<String> extraCommands) {
+    public StackEvent[] getTrace() {
         System.out.println("Tracing Stack...");
         List<String> commands = new ArrayList<String>();
         commands.add("stop in " + className + ".main");
@@ -92,13 +67,12 @@ public class Tracer {
         commands.add("clear " + className + ".main");
         commands.add("trace go methods 0x1");
         commands.add("resume");
-        for (String command : extraCommands) {
-            commands.add(command);
-        }
         writeCommands(commands);
         List<String> outputs = getOutputs();
+        System.out.println("Parsing Trace...");
         List<StackEvent> results = formatTrace(outputs);
-        return (StackEvent[]) results.toArray(new StackEvent[0]);
+        StackEvent[] arr = results.toArray(new StackEvent[0]);
+        return arr;
     }
 
     private List<StackEvent> formatTrace(List<String> lines) {
@@ -158,11 +132,11 @@ public class Tracer {
 
     private List<String> getOutputs() {
         List<String> outputs = new ArrayList<String>();
-        while (stdout.hasNext()) {
-            String result = stdout.next();
+        while (jdbout.hasNext()) {
+            String result = jdbout.next();
             outputs.add(result);
         }
-        stdout.close();
+        jdbout.close();
         return outputs;
     }
 
@@ -172,22 +146,36 @@ public class Tracer {
 
     private PrintWriter getSTDIN() {
         OutputStream os = shell.getOutputStream();
-        PrintWriter stdin = new PrintWriter(os);
-        return stdin;
+        PrintWriter jdbin = new PrintWriter(os);
+        return jdbin;
     }
 
     private Process getShell(File file) throws IOException {
-        ProcessBuilder builder = new ProcessBuilder("jdb");
+        String[] flags = { "jdb", "-connect", "com.sun.jdi.SocketAttach:hostname=localhost,port=8000" };
+        ProcessBuilder builder = new ProcessBuilder(flags);
         builder.redirectErrorStream(true);
         builder.directory(file);
         return builder.start();
     }
 
-    private static void runCompiler(File file) throws IOException {
+    private void runProgram() throws InterruptedException, IOException {
+        String[] flags = { "java", "-Xdebug", "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y",
+                this.className };
+        ProcessBuilder builder = new ProcessBuilder(flags);
+        builder.redirectErrorStream(true);
+        builder.directory(parentDirectory);
+        builder.redirectInput(Redirect.INHERIT);
+        builder.redirectOutput(Redirect.INHERIT);
+        ProgramRunner runner = new ProgramRunner(builder);
+        Thread thread = new Thread(runner);
+        thread.start();
+    }
+
+    private void runCompiler() throws IOException {
         List<String> args = new ArrayList<String>();
         args.add("javac");
         args.add("-g");
-        File[] files = file.listFiles();
+        File[] files = this.parentDirectory.listFiles();
         for (File f : files) {
             if (!f.getName().endsWith(".java")) {
                 continue;
@@ -197,7 +185,7 @@ public class Tracer {
         }
         ProcessBuilder builder = new ProcessBuilder(args);
         builder.redirectErrorStream(true);
-        builder.directory(file);
+        builder.directory(this.parentDirectory);
         try {
             Process process = builder.start();
             process.waitFor();
@@ -208,7 +196,7 @@ public class Tracer {
     }
 
     private void writeToConsole(String str) {
-        stdin.write(str);
-        stdin.flush();
+        jdbin.write(str);
+        jdbin.flush();
     }
 }
