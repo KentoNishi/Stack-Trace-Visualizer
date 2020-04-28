@@ -55,15 +55,15 @@ public class Tracer {
 
     public StackEvent[] getTrace(String mode) {
         if (mode.equals("cli")) {
-            this.runWithKeylogger();
-            return this.getTrace(new String[0]);
+            ArrayList<String> inputs = this.runWithKeylogger();
+            return this.getTrace(inputs);
         } else if (mode.equalsIgnoreCase("gui")) {
-            return this.getTrace(new String[0]);
+            return this.getTrace(new ArrayList<String>());
         }
         throw new IllegalArgumentException("The application mode is invalid.");
     }
 
-    private void runWithKeylogger() {
+    private ArrayList<String> runWithKeylogger() {
         System.out.println("Running with CLI...\n");
         List<String> flags = new ArrayList<String>();
         flags.add("java");
@@ -79,12 +79,12 @@ public class Tracer {
         Thread readerThread = new Thread(runnableReader);
         readerThread.setDaemon(true);
         readerThread.start();
-        while (processThread.isAlive())
-            ;
-        return;
+        while (processThread.isAlive()) {
+        }
+        return runnableReader.getLines();
     }
 
-    private StackEvent[] getTrace(String[] extraCommands) {
+    private StackEvent[] getTrace(List<String> extraCommands) {
         System.out.println("Tracing Stack...");
         List<String> commands = new ArrayList<String>();
         commands.add("stop in " + className + ".main");
