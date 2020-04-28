@@ -11,6 +11,7 @@ public class Tracer {
     private PrintWriter stdin;
     private Scanner stdout;
     private String className;
+    private File parentDirectory;
 
     public Tracer() throws IOException {
         this(new File(new File(".").getAbsolutePath()).getAbsolutePath());
@@ -25,6 +26,7 @@ public class Tracer {
             classPath = new File(classPath).getAbsolutePath();
             File path = new File(classPath);
             File parentDir = new File(path.getParentFile().getCanonicalPath());
+            this.parentDirectory = parentDir;
             if (compile) {
                 System.out.println("Searching for files...");
                 runCompiler(parentDir);
@@ -51,10 +53,48 @@ public class Tracer {
         }
     }
 
-    public StackEvent[] getTrace() {
+    public StackEvent[] getTrace(String mode) {
+        if (mode.equals("cli")) {
+            this.runWithKeylogger();
+            return this.getTrace(new String[0]);
+        } else if (mode.equalsIgnoreCase("gui")) {
+            return this.getTrace(new String[0]);
+        }
+        throw new IllegalArgumentException("The application mode is invalid.");
+    }
+
+    private void runWithKeylogger() {
+        System.out.println("Running with CLI...\n");
+        List<String> flags = new ArrayList<String>();
+        flags.add("java");
+        flags.add(this.className);
+        ProcessBuilder builder = new ProcessBuilder(flags);
+        builder.redirectErrorStream(true);
+        builder.directory(this.parentDirectory);
+        builder.redirectOutput(ProcessBuilder.Redirect.INHERIT);
+        RunnableProcess runnableProcess = new RunnableProcess(builder);
+        Thread processThread = new Thread(runnableProcess);
+        processThread.start();
+        RunnableReader runnableReader = new RunnableReader(runnableProcess, processThread);
+        Thread readerThread = new Thread(runnableReader);
+        readerThread.setDaemon(true);
+        readerThread.start();
+        while (processThread.isAlive())
+            ;
+        return;
+    }
+
+    private StackEvent[] getTrace(String[] extraCommands) {
         System.out.println("Tracing Stack...");
-        String[] commands = { "stop in " + className + ".main", "run " + className, "clear " + className + ".main",
-                "trace go methods 0x1", "resume" };
+        List<String> commands = new ArrayList<String>();
+        commands.add("stop in " + className + ".main");
+        commands.add("run " + className);
+        commands.add("clear " + className + ".main");
+        commands.add("trace go methods 0x1");
+        commands.add("resume");
+        for (String command : extraCommands) {
+            commands.add(command);
+        }
         writeCommands(commands);
         List<String> outputs = getOutputs();
         List<StackEvent> results = formatTrace(outputs);
@@ -110,7 +150,7 @@ public class Tracer {
         return outputs;
     }
 
-    private void writeCommands(String[] strs) {
+    private void writeCommands(List<String> strs) {
         for (String s : strs) {
             writeToConsole(s + "\n");
         }

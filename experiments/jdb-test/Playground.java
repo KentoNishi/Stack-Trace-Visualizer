@@ -3,9 +3,8 @@ public class Playground {
         System.out.println("Initializing Tracer...");
         Tracer tracer = new Tracer("../TestPrograms/TestProgram.class");
         // C:/Users/kento/Documents/GitHub/APCS/JMCh19_SafeTrade/SafeTrade.class
-
-        StackEvent[] stackTrace = tracer.getTrace();
-        System.out.println("Stack Trace:");
+        StackEvent[] stackTrace = tracer.getTrace("cli");
+        System.out.println("Stack Trace:\n");
         for (StackEvent line : stackTrace) {
             System.out.println(line);
         }
