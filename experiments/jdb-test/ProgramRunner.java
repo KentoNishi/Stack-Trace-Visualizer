@@ -1,4 +1,6 @@
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Scanner;
 
 public class ProgramRunner implements Runnable {
 
@@ -10,11 +12,16 @@ public class ProgramRunner implements Runnable {
 
     public void run() {
         try {
-            try {
-                this.builder.start().waitFor();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            Process process = this.builder.start();
+            InputStream os = process.getInputStream();
+            Scanner scanner = new Scanner(os);
+            while (scanner.hasNext()) {
+                String line = scanner.nextLine();
+                if (!line.equals("Listening for transport dt_socket at address: 8000")) {
+                    System.out.println(line);
+                }
             }
+            scanner.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

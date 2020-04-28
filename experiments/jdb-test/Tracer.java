@@ -165,7 +165,6 @@ public class Tracer {
         builder.redirectErrorStream(true);
         builder.directory(parentDirectory);
         builder.redirectInput(Redirect.INHERIT);
-        builder.redirectOutput(Redirect.INHERIT);
         ProgramRunner runner = new ProgramRunner(builder);
         Thread thread = new Thread(runner);
         thread.start();
