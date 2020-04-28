@@ -71,8 +71,12 @@ public class Tracer {
         List<String> outputs = getOutputs();
         System.out.println("Parsing Trace...");
         List<StackEvent> results = formatTrace(outputs);
-        StackEvent[] arr = results.toArray(new StackEvent[0]);
-        return arr;
+        StackEvent[] stackTrace = results.toArray(new StackEvent[0]);
+        System.out.println("Stack Trace:");
+        for (StackEvent line : stackTrace) {
+            System.out.println(line);
+        }
+        return stackTrace;
     }
 
     private List<StackEvent> formatTrace(List<String> lines) {

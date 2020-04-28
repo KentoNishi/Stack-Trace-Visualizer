@@ -5,9 +5,5 @@ public class Playground {
         // ../TestPrograms/TestProgram.class
         // C:/Users/kento/Documents/GitHub/APCS/JMCh19_SafeTrade/SafeTrade.class
         StackEvent[] stackTrace = tracer.getTrace();
-        System.out.println("Stack Trace:");
-        for (StackEvent line : stackTrace) {
-            System.out.println(line);
-        }
     }
 }

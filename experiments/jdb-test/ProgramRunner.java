@@ -15,11 +15,10 @@ public class ProgramRunner implements Runnable {
             Process process = this.builder.start();
             InputStream os = process.getInputStream();
             Scanner scanner = new Scanner(os);
+            scanner.nextLine();
             while (scanner.hasNext()) {
                 String line = scanner.nextLine();
-                if (!line.equals("Listening for transport dt_socket at address: 8000")) {
-                    System.out.println(line);
-                }
+                System.out.println(line);
             }
             scanner.close();
         } catch (IOException e) {
