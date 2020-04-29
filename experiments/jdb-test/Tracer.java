@@ -14,10 +14,6 @@ public class Tracer {
     private String className;
     private File parentDirectory;
 
-    public Tracer() throws IOException {
-        this(new File(new File(".").getAbsolutePath()).getAbsolutePath());
-    }
-
     public Tracer(String classPath) {
         this(classPath, true);
     }
@@ -59,7 +55,7 @@ public class Tracer {
         }
     }
 
-    public StackEvent[] getTrace() {
+    public void getTrace() {
         System.out.println("Tracing Stack...");
         List<String> commands = new ArrayList<String>();
         commands.add("stop in " + className + ".main");
@@ -68,20 +64,24 @@ public class Tracer {
         commands.add("trace go methods 0x1");
         commands.add("resume");
         writeCommands(commands);
-        List<String> outputs = getOutputs();
-        System.out.println("Parsing Trace...");
-        List<StackEvent> results = formatTrace(outputs);
-        StackEvent[] stackTrace = results.toArray(new StackEvent[0]);
         System.out.println("Stack Trace:");
-        for (StackEvent line : stackTrace) {
-            System.out.println(line);
-        }
-        return stackTrace;
+        getOutputs();
     }
 
-    private List<StackEvent> formatTrace(List<String> lines) {
-        List<StackEvent> outputs = new ArrayList<StackEvent>();
-        for (String line : lines) {
+    private void writeCommands(List<String> strs) {
+        for (String s : strs) {
+            writeToConsole(s + "\n");
+        }
+    }
+
+    private void addToStack(StackEvent event) {
+        System.out.println(event);
+    }
+
+    private void getOutputs() {
+        while (jdbout.hasNext()) {
+            String line = jdbout.next();
+
             String[] tokenized = line.split(",");
             if (tokenized.length < 2) {
                 continue;
@@ -112,7 +112,7 @@ public class Tracer {
                 StackEvent event = new StackEvent();
                 event.setEventMethod(method);
                 event.setEventType("entered");
-                outputs.add(event);
+                this.addToStack(event);
             } else {
                 String returnMessage = "Method exited: return value = ";
                 if (tokenized[0].startsWith(returnMessage)) {
@@ -121,27 +121,11 @@ public class Tracer {
                     event.setEventMethod(method);
                     event.setEventType("exited");
                     event.setReturnValue(returnValue);
-                    outputs.add(event);
+                    this.addToStack(event);
                 }
             }
         }
-        return outputs;
-    }
-
-    private void writeCommands(List<String> strs) {
-        for (String s : strs) {
-            writeToConsole(s + "\n");
-        }
-    }
-
-    private List<String> getOutputs() {
-        List<String> outputs = new ArrayList<String>();
-        while (jdbout.hasNext()) {
-            String result = jdbout.next();
-            outputs.add(result);
-        }
         jdbout.close();
-        return outputs;
     }
 
     private Scanner getSTDOUT() {
