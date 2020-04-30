@@ -20,6 +20,7 @@ public class Tracer {
     }
 
     public Tracer(String classPath, boolean compile) {
+        System.out.println("Initializing Tracer...");
         try {
             classPath = new File(classPath).getAbsolutePath();
             File path = new File(classPath);
@@ -67,7 +68,13 @@ public class Tracer {
         commands.add("resume");
         writeCommands(commands);
         getOutputs();
-        System.out.println("\nThe tracer process was closed.");
+        System.out.println("\nStack trace complete.");
+    }
+
+    public void closeWindow() {
+        if (this.gui != null) {
+            this.gui.dispose();
+        }
     }
 
     private void writeCommands(List<String> strs) {

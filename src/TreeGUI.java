@@ -7,10 +7,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -26,7 +24,6 @@ public class TreeGUI extends JFrame {
     private static int windowDimension;
 
     public TreeGUI(String name) {
-
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         TreeGUI.windowDimension = (int) Math.min(screenSize.width * 0.75, screenSize.height * 0.75);
         this.name = name;
@@ -73,7 +70,6 @@ public class TreeGUI extends JFrame {
                 popup.setSize(TreeGUI.windowDimension, popup.getHeight());
                 popup.setLocationRelativeTo(null);
                 popup.setVisible(true);
-                System.out.println("Method: " + nodeInfo.getEventMethod() + ", Returned: " + nodeInfo.getReturnValue());
             }
         });
         this.add(scrollTree);
