@@ -15,11 +15,11 @@ public class Launcher {
                 prompt = (String) JOptionPane.showInputDialog(frame,
                         "Enter the path to the .class file containing your main method.", "Stack Tracer",
                         JOptionPane.PLAIN_MESSAGE, null, null, prefs.get("runPath", ""));
-                prefs.put("runPath", prompt);
                 if (prompt == null) {
                     close();
                     break;
                 }
+                prefs.put("runPath", prompt);
                 if ((prompt.length() > 0)) {
                     close();
                     tracer = new Tracer(prompt);
