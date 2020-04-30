@@ -1,6 +1,4 @@
 import java.util.Stack;
-
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
@@ -20,6 +18,7 @@ public class TreeGUI extends JFrame {
         this.stack = new Stack<TreeNode>();
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(name);
         this.tree = new JTree(root);
+        this.tree.setToggleClickCount(1);
         DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
         int dim = 20;
         ImageIcon closedIcon = new ImageIcon("./images/plus.png");
@@ -60,7 +59,6 @@ public class TreeGUI extends JFrame {
         for (int i = 0; i < this.tree.getRowCount(); i++) {
             this.tree.expandRow(i);
         }
-        this.resizeToFit();
     }
 
     private void resizeToFit() {
