@@ -12,6 +12,7 @@ public class Launcher {
             String prompt = "";
             while (prompt.length() == 0) {
                 Preferences prefs = Preferences.userNodeForPackage(Launcher.class);
+                frame.setAlwaysOnTop(true);
                 prompt = (String) JOptionPane.showInputDialog(frame,
                         "Enter the path to the .class file containing your main method.", "Stack Tracer",
                         JOptionPane.PLAIN_MESSAGE, null, null, prefs.get("runPath", ""));

@@ -25,7 +25,8 @@ public class TreeGUI extends JFrame {
 
     public TreeGUI(String name) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        TreeGUI.windowDimension = (int) Math.min(screenSize.width * 0.75, screenSize.height * 0.75);
+        TreeGUI.windowDimension = (int) Math.min(screenSize.width * 0.5, screenSize.height * 0.5);
+        TreeGUI.windowDimension = Math.max(300, TreeGUI.windowDimension);
         this.name = name;
         this.stack = new Stack<TreeNode>();
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(name);
@@ -52,6 +53,9 @@ public class TreeGUI extends JFrame {
                 if (node == null) {
                     return;
                 }
+                if (node.getUserObject().getClass().equals(String.class)) {
+                    return;
+                }
                 StackEvent nodeInfo = (StackEvent) node.getUserObject();
                 if (nodeInfo == null) {
                     return;
@@ -69,6 +73,7 @@ public class TreeGUI extends JFrame {
                 popup.pack();
                 popup.setSize(TreeGUI.windowDimension, popup.getHeight());
                 popup.setLocationRelativeTo(null);
+                popup.setAlwaysOnTop(true);
                 popup.setVisible(true);
             }
         });
@@ -77,6 +82,7 @@ public class TreeGUI extends JFrame {
         this.setTitle("Stack Trace: " + this.name);
         this.resizeToFit();
         this.setLocationRelativeTo(null);
+        this.setAlwaysOnTop(true);
         this.setVisible(true);
     }
 
