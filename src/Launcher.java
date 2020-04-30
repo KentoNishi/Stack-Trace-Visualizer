@@ -2,7 +2,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import java.util.prefs.*;
 
-public class Launch {
+public class Launcher {
     private static JFrame frame;
     private static Tracer tracer;
 
@@ -11,7 +11,7 @@ public class Launch {
             frame = new JFrame();
             String prompt = "";
             while (prompt.length() == 0) {
-                Preferences prefs = Preferences.userNodeForPackage(Launch.class);
+                Preferences prefs = Preferences.userNodeForPackage(Launcher.class);
                 prompt = (String) JOptionPane.showInputDialog(frame,
                         "Enter the path to the .class file containing your main method.", "Stack Tracer",
                         JOptionPane.PLAIN_MESSAGE, null, null, prefs.get("runPath", ""));
@@ -23,9 +23,6 @@ public class Launch {
                 if ((prompt.length() > 0)) {
                     close();
                     tracer = new Tracer(prompt);
-                    // ../junk/TestProgram.class
-                    // C:/Users/kento/Documents/GitHub/APCS/JMCh19_SafeTrade/SafeTrade.class
-                    // C:/Users/kento/Documents/GitHub/APCS/JMCh20_5LinkedListWithTail/TestList.class
                     tracer.getTrace();
                 }
             }
