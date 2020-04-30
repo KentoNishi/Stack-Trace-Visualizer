@@ -67,7 +67,7 @@ public class Tracer {
         commands.add("resume");
         writeCommands(commands);
         getOutputs();
-        System.out.println("\nStack trace complete.");
+        System.out.println("\nThe tracer process was closed.");
     }
 
     private void writeCommands(List<String> strs) {
