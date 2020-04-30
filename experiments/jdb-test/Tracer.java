@@ -13,6 +13,7 @@ public class Tracer {
     private Scanner jdbout;
     private String className;
     private File parentDirectory;
+    private TreeGUI gui;
 
     public Tracer(String classPath) {
         this(classPath, true);
@@ -45,6 +46,7 @@ public class Tracer {
             shell = getShell(parentDirectory);
             jdbin = getSTDIN();
             jdbout = getSTDOUT();
+            this.gui = new TreeGUI(className);
             try {
                 runProgram();
             } catch (InterruptedException e) {
@@ -56,7 +58,7 @@ public class Tracer {
     }
 
     public void getTrace() {
-        System.out.println("Tracing Stack...");
+        System.out.println("Tracing Stack...\n");
         List<String> commands = new ArrayList<String>();
         commands.add("stop in " + className + ".main");
         commands.add("run " + className);
@@ -64,18 +66,14 @@ public class Tracer {
         commands.add("trace go methods 0x1");
         commands.add("resume");
         writeCommands(commands);
-        System.out.println("Stack Trace:");
         getOutputs();
+        System.out.println("\nStack trace complete.");
     }
 
     private void writeCommands(List<String> strs) {
         for (String s : strs) {
             writeToConsole(s + "\n");
         }
-    }
-
-    private void addToStack(StackEvent event) {
-        System.out.println(event);
     }
 
     private void getOutputs() {
@@ -111,17 +109,15 @@ public class Tracer {
             if (action.equals("entered")) {
                 StackEvent event = new StackEvent();
                 event.setEventMethod(method);
-                event.setEventType("entered");
-                this.addToStack(event);
+                this.gui.addNode(event);
             } else {
                 String returnMessage = "Method exited: return value = ";
                 if (tokenized[0].startsWith(returnMessage)) {
                     String returnValue = tokenized[0].substring(returnMessage.length(), tokenized[0].length());
                     StackEvent event = new StackEvent();
                     event.setEventMethod(method);
-                    event.setEventType("exited");
                     event.setReturnValue(returnValue);
-                    this.addToStack(event);
+                    this.gui.popOut(returnValue);
                 }
             }
         }
