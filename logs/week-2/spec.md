@@ -41,4 +41,4 @@
 | `private void popOut` | Creates a new popup. |
 
 ## Class Diagram
-![Class Diagram](./src/classes.png)
+![Class Diagram](classes.png)
