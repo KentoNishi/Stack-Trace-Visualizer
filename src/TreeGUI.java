@@ -116,13 +116,7 @@ public class TreeGUI extends JFrame {
         parentNode.getNode().add(newNode);
         this.getStack(thread).add(new TreeNode(event, parentNode, newNode));
         this.getModel().reload(this.getStack(thread).firstElement().getNode());
-        DefaultMutableTreeNode currentNode = this.root.getNextNode();
-        while (currentNode != null) {
-            if (currentNode.getLevel() == 2) {
-                this.tree.expandPath(new TreePath(currentNode.getPath()));
-            }
-            currentNode = currentNode.getNextNode();
-        }
+        this.tree.expandPath(new TreePath(parentNode.getNode().getPath()));
     }
 
     private void resizeToFit() {
