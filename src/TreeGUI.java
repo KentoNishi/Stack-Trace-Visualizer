@@ -134,7 +134,6 @@ public class TreeGUI extends JFrame {
     public void popOut(String returnValue, String thread) {
         TreeNode top = this.getStack(thread).pop();
         top.getEvent().setReturnValue(returnValue);
-        this.expand(thread, top.getParent());
     }
 
     private void expand(String thread, TreeNode parentNode) {
