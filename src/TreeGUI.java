@@ -27,6 +27,10 @@ public class TreeGUI extends JFrame {
     private DefaultMutableTreeNode root;
 
     public TreeGUI(String name) {
+        Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+            public void uncaughtException(Thread t, Throwable e) {
+            }
+        });
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         TreeGUI.windowDimension = (int) Math.min(screenSize.width * 0.5, screenSize.height * 0.5);
         TreeGUI.windowDimension = Math.max(300, TreeGUI.windowDimension);
@@ -115,8 +119,7 @@ public class TreeGUI extends JFrame {
         TreeNode parentNode = this.getStack(thread).peek();
         parentNode.getNode().add(newNode);
         this.getStack(thread).add(new TreeNode(event, parentNode, newNode));
-        this.getModel().reload(this.getStack(thread).firstElement().getNode());
-        this.tree.expandPath(new TreePath(parentNode.getNode().getPath()));
+        this.expand(thread, parentNode);
     }
 
     private void resizeToFit() {
@@ -129,6 +132,13 @@ public class TreeGUI extends JFrame {
     }
 
     public void popOut(String returnValue, String thread) {
-        this.getStack(thread).pop().getEvent().setReturnValue(returnValue);
+        TreeNode top = this.getStack(thread).pop();
+        top.getEvent().setReturnValue(returnValue);
+        this.expand(thread, top.getParent());
+    }
+
+    private void expand(String thread, TreeNode parentNode) {
+        this.getModel().reload(this.getStack(thread).firstElement().getNode());
+        this.tree.expandPath(new TreePath(parentNode.getNode().getPath()));
     }
 }
