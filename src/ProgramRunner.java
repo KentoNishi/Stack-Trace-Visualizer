@@ -6,7 +6,7 @@ public class ProgramRunner implements Runnable {
 
     private ProcessBuilder builder;
 
-    ProgramRunner(ProcessBuilder builder) {
+    public ProgramRunner(ProcessBuilder builder) {
         this.builder = builder;
     }
 

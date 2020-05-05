@@ -1,11 +1,11 @@
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class TreeNode {
-    TreeNode parent;
-    StackEvent event;
-    DefaultMutableTreeNode node;
+    private TreeNode parent;
+    private StackEvent event;
+    private DefaultMutableTreeNode node;
 
-    TreeNode(StackEvent event, TreeNode parent, DefaultMutableTreeNode node) {
+    public TreeNode(StackEvent event, TreeNode parent, DefaultMutableTreeNode node) {
         this.event = event;
         this.parent = parent;
         this.node = node;
