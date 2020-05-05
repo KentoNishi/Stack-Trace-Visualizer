@@ -1,4 +1,5 @@
 import java.util.Stack;
+import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
@@ -19,18 +20,19 @@ import java.awt.Toolkit;
 public class TreeGUI extends JFrame {
     private static final long serialVersionUID = 1L;
     private JTree tree;
-    private Stack<TreeNode> stack;
+    private HashMap<String, Stack<TreeNode>> stackMap;
     private String name;
     private static int windowDimension;
+    private DefaultMutableTreeNode root;
 
     public TreeGUI(String name) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         TreeGUI.windowDimension = (int) Math.min(screenSize.width * 0.5, screenSize.height * 0.5);
         TreeGUI.windowDimension = Math.max(300, TreeGUI.windowDimension);
         this.name = name;
-        this.stack = new Stack<TreeNode>();
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode(name);
-        this.tree = new JTree(root);
+        this.stackMap = new HashMap<String, Stack<TreeNode>>();
+        this.root = new DefaultMutableTreeNode(name);
+        this.tree = new JTree(this.root);
         DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
         int dim = 18;
         ImageIcon closedIcon = new ImageIcon("./images/class.png");
@@ -42,7 +44,6 @@ public class TreeGUI extends JFrame {
         renderer.setClosedIcon(closedIcon);
         renderer.setOpenIcon(openIcon);
         renderer.setLeafIcon(leafIcon);
-        stack.add(new TreeNode(null, null, root));
         this.tree.setToggleClickCount(0);
         JScrollPane scrollTree = new JScrollPane(this.tree);
         scrollTree.setViewportView(this.tree);
@@ -86,6 +87,17 @@ public class TreeGUI extends JFrame {
         this.setVisible(true);
     }
 
+    private Stack<TreeNode> getStack(String thread) {
+        if (this.stackMap.containsKey(thread)) {
+            return this.stackMap.get(thread);
+        }
+        this.stackMap.put(thread, new Stack<TreeNode>());
+        DefaultMutableTreeNode threadNode = new DefaultMutableTreeNode(thread);
+        this.stackMap.get(thread).add(new TreeNode(null, null, threadNode));
+        root.add(this.stackMap.get(thread).peek().getNode());
+        return this.stackMap.get(thread);
+    }
+
     private DefaultTreeModel getModel() {
         return (DefaultTreeModel) this.tree.getModel();
     }
@@ -95,12 +107,13 @@ public class TreeGUI extends JFrame {
         return node;
     }
 
-    public void addNode(StackEvent event) {
+    public void popIn(String method, String thread) {
+        StackEvent event = new StackEvent(method, thread);
         DefaultMutableTreeNode newNode = newNode(event);
-        TreeNode parentNode = this.stack.peek();
+        TreeNode parentNode = this.getStack(thread).peek();
         parentNode.getNode().add(newNode);
-        this.stack.add(new TreeNode(event, parentNode, newNode));
-        this.getModel().reload(this.stack.firstElement().getNode());
+        this.getStack(thread).add(new TreeNode(event, parentNode, newNode));
+        this.getModel().reload(this.getStack(thread).firstElement().getNode());
         for (int i = 0; i < this.tree.getRowCount(); i++) {
             this.tree.expandRow(i);
         }
@@ -115,7 +128,7 @@ public class TreeGUI extends JFrame {
         }
     }
 
-    public void popOut(String returnValue) {
-        this.stack.pop().getEvent().setReturnValue(returnValue);
+    public void popOut(String returnValue, String thread) {
+        this.getStack(thread).pop().getEvent().setReturnValue(returnValue);
     }
 }

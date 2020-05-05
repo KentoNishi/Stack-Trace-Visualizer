@@ -30,6 +30,7 @@ public class Launcher {
         } catch (Exception error) {
             close();
             JOptionPane.showMessageDialog(frame, error.toString(), "Stack Tracer", JOptionPane.ERROR_MESSAGE);
+            error.printStackTrace();
             System.exit(1);
         }
     }

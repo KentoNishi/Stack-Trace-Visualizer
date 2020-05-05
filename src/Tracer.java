@@ -86,46 +86,25 @@ public class Tracer {
     private void getOutputs() {
         while (jdbout.hasNext()) {
             String line = jdbout.next();
-
             String[] tokenized = line.split(",");
-            if (tokenized.length < 2) {
-                continue;
-            }
-            int methodIndex = -1;
-            for (int i = 0; i < tokenized.length; i++) {
-                if (tokenized[i].contains("thread=main")) {
-                    methodIndex = i + 1;
-                    break;
+            String thread;
+            String method;
+            if (tokenized[0].startsWith("Method exited:")) {
+                thread = tokenized[1].substring(" \"thread=".length(), tokenized[1].length() - 1);
+                method = tokenized[2].substring(1, tokenized[2].length());
+                if (method.startsWith("jdk")) {
+                    continue;
                 }
-            }
-            if (methodIndex == -1) {
-                continue;
-            }
-            String method = tokenized[methodIndex].replaceAll("\\s", "");
-            String action = tokenized[0];
-            String[] actionSplit = action.split(" ");
-            if (actionSplit.length > 1) {
-                action = actionSplit[1].replaceAll("[^a-zA-Z0-9!@\\.,]", "");
-            }
-            if (!action.equals("entered") && !action.equals("exited")) {
-                continue;
-            }
-            if (method.startsWith("jdk")) {
-                continue;
-            }
-            if (action.equals("entered")) {
-                StackEvent event = new StackEvent();
-                event.setEventMethod(method);
-                this.gui.addNode(event);
-            } else {
-                String returnMessage = "Method exited: return value = ";
-                if (tokenized[0].startsWith(returnMessage)) {
-                    String returnValue = tokenized[0].substring(returnMessage.length(), tokenized[0].length());
-                    StackEvent event = new StackEvent();
-                    event.setEventMethod(method);
-                    event.setReturnValue(returnValue);
-                    this.gui.popOut(returnValue);
+                String returnValue = tokenized[0].substring("Method exited: return value = ".length(),
+                        tokenized[0].length());
+                this.gui.popOut(returnValue, thread);
+            } else if (tokenized[0].startsWith("Method entered:")) {
+                thread = tokenized[0].substring("Method entered: \"thread=".length(), tokenized[0].length() - 1);
+                method = tokenized[1].substring(1, tokenized[1].length());
+                if (method.startsWith("jdk")) {
+                    continue;
                 }
+                this.gui.popIn(method, thread);
             }
         }
         jdbout.close();

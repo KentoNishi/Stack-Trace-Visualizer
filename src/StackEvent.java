@@ -7,9 +7,12 @@ public class StackEvent {
     private Instant startTime;
     private Instant endTime;
     private long timeTaken;
+    private String thread;
 
-    public StackEvent() {
+    public StackEvent(String method, String thread) {
         this.startTime = Instant.now();
+        this.eventMethod = method;
+        this.thread = thread;
     }
 
     public String getEventMethod() {
@@ -18,6 +21,14 @@ public class StackEvent {
 
     public void setEventMethod(String eventMethod) {
         this.eventMethod = eventMethod;
+    }
+
+    public void setThread(String thread) {
+        this.thread = thread;
+    }
+
+    public String getThread() {
+        return this.thread;
     }
 
     public String getReturnValue() {
