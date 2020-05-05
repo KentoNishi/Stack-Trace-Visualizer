@@ -64,7 +64,7 @@ public class Tracer {
         commands.add("stop in " + className + ".main");
         commands.add("run " + className);
         commands.add("clear " + className + ".main");
-        commands.add("trace go methods 0x1");
+        commands.add("trace go methods");
         commands.add("resume");
         writeCommands(commands);
         getOutputs();
@@ -89,6 +89,9 @@ public class Tracer {
             String[] tokenized = line.split(",");
             String thread;
             String method;
+            if (tokenized.length < 3) {
+                continue;
+            }
             if (tokenized[0].startsWith("Method exited:")) {
                 thread = tokenized[1].substring(" \"thread=".length(), tokenized[1].length() - 1);
                 method = tokenized[2].substring(1, tokenized[2].length());
@@ -101,7 +104,7 @@ public class Tracer {
             } else if (tokenized[0].startsWith("Method entered:")) {
                 thread = tokenized[0].substring("Method entered: \"thread=".length(), tokenized[0].length() - 1);
                 method = tokenized[1].substring(1, tokenized[1].length());
-                if (method.startsWith("jdk")) {
+                if (method.startsWith("jdk.internal")) {
                     continue;
                 }
                 this.gui.popIn(method, thread);

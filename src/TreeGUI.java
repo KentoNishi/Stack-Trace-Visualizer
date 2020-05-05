@@ -13,6 +13,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -95,6 +96,7 @@ public class TreeGUI extends JFrame {
         DefaultMutableTreeNode threadNode = new DefaultMutableTreeNode(thread);
         this.stackMap.get(thread).add(new TreeNode(null, null, threadNode));
         root.add(this.stackMap.get(thread).peek().getNode());
+        this.getModel().reload();
         return this.stackMap.get(thread);
     }
 
@@ -114,8 +116,12 @@ public class TreeGUI extends JFrame {
         parentNode.getNode().add(newNode);
         this.getStack(thread).add(new TreeNode(event, parentNode, newNode));
         this.getModel().reload(this.getStack(thread).firstElement().getNode());
-        for (int i = 0; i < this.tree.getRowCount(); i++) {
-            this.tree.expandRow(i);
+        DefaultMutableTreeNode currentNode = this.root.getNextNode();
+        while (currentNode != null) {
+            if (currentNode.getLevel() == 2) {
+                this.tree.expandPath(new TreePath(currentNode.getPath()));
+            }
+            currentNode = currentNode.getNextNode();
         }
     }
 
