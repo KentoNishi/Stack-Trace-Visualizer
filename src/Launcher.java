@@ -11,6 +11,8 @@ public class Launcher {
 
     /**
      * Runs the launcher.
+     * 
+     * @param args arguments
      */
     public static void main(String[] args) {
         try {
