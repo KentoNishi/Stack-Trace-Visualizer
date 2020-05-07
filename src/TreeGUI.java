@@ -8,8 +8,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.KeyStroke;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
@@ -17,6 +15,7 @@ import javax.swing.tree.TreePath;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.*;
 
 /**
  * The GUI for the stack tree. Extends JFrame.
@@ -61,34 +60,16 @@ public class TreeGUI extends JFrame {
         JScrollPane scrollTree = new JScrollPane(this.tree);
         scrollTree.setViewportView(this.tree);
         scrollTree.setVisible(true);
-        this.tree.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-                if (node == null) {
-                    return;
+        this.tree.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                onSelected();
+            }
+        });
+        this.tree.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == 10) {
+                    onSelected();
                 }
-                if (node.getUserObject().getClass().equals(String.class)) {
-                    return;
-                }
-                StackEvent nodeInfo = (StackEvent) node.getUserObject();
-                if (nodeInfo == null) {
-                    return;
-                }
-                JFrame popup = new JFrame();
-                String[] header = { "Method Name", "Return Value", "Execution Time" };
-                String[][] values = { header,
-                        { nodeInfo.getEventMethod(), nodeInfo.getReturnValue(), nodeInfo.getTime() + "ms" } };
-                JTable table = new JTable(values, header);
-                popup.getRootPane().registerKeyboardAction(event -> {
-                    popup.dispose();
-                }, KeyStroke.getKeyStroke(27, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
-                popup.add(table);
-                popup.setTitle(nodeInfo.getEventMethod());
-                popup.pack();
-                popup.setSize(TreeGUI.windowDimension, popup.getHeight());
-                popup.setLocationRelativeTo(null);
-                popup.setAlwaysOnTop(true);
-                popup.setVisible(true);
             }
         });
         this.add(scrollTree);
@@ -98,6 +79,35 @@ public class TreeGUI extends JFrame {
         this.setLocationRelativeTo(null);
         this.setAlwaysOnTop(true);
         this.setVisible(true);
+    }
+
+    private void onSelected() {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+        if (node == null) {
+            return;
+        }
+        if (node.getUserObject().getClass().equals(String.class)) {
+            return;
+        }
+        StackEvent nodeInfo = (StackEvent) node.getUserObject();
+        if (nodeInfo == null) {
+            return;
+        }
+        JFrame popup = new JFrame();
+        String[] header = { "Method Name", "Return Value", "Execution Time" };
+        String[][] values = { header,
+                { nodeInfo.getEventMethod(), nodeInfo.getReturnValue(), nodeInfo.getTime() + "ms" } };
+        JTable table = new JTable(values, header);
+        popup.getRootPane().registerKeyboardAction(event -> {
+            popup.dispose();
+        }, KeyStroke.getKeyStroke(27, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
+        popup.add(table);
+        popup.setTitle(nodeInfo.getEventMethod());
+        popup.pack();
+        popup.setSize(TreeGUI.windowDimension, popup.getHeight());
+        popup.setLocationRelativeTo(null);
+        popup.setAlwaysOnTop(true);
+        popup.setVisible(true);
     }
 
     /**
