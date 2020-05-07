@@ -28,14 +28,13 @@ public class Launcher {
                 prefs.put("runPath", prompt);
                 if ((prompt.length() > 0)) {
                     tracer = new Tracer(prompt);
-                    tracer.getTrace();
+                    tracer.runTrace();
                 }
             }
         } catch (Exception error) {
             JOptionPane.showMessageDialog(frame, error.toString(), "Stack Tracer", JOptionPane.ERROR_MESSAGE);
             error.printStackTrace();
+            System.exit(1);
         }
-        frame.dispose();
-        System.exit(1);
     }
 }

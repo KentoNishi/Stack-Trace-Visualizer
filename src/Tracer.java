@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * The stack tracer class.
+ */
 public class Tracer {
     private Process shell;
     private PrintWriter jdbin;
@@ -16,10 +19,21 @@ public class Tracer {
     private TreeGUI gui;
     private ProgramRunner runner;
 
+    /**
+     * The Tracer constructor.
+     * 
+     * @param classPath source class path
+     */
     public Tracer(String classPath) {
         this(classPath, true);
     }
 
+    /**
+     * The Tracer constructor with a compiler flag.
+     * 
+     * @param classPath source class path
+     * @param compile   compilation toggle
+     */
     public Tracer(String classPath, boolean compile) {
         System.out.println("Initializing Tracer...");
         try {
@@ -59,7 +73,10 @@ public class Tracer {
         }
     }
 
-    public void getTrace() {
+    /**
+     * Gets the stack trace.
+     */
+    public void runTrace() {
         System.out.println("Tracing Stack...\n");
         List<String> commands = new ArrayList<String>();
         commands.add("stop in " + className + ".main");
@@ -72,18 +89,29 @@ public class Tracer {
         System.out.println("\nStack trace complete.");
     }
 
+    /**
+     * Closes the TreeGUI window.
+     */
     public void closeWindow() {
         if (this.gui != null) {
             this.gui.dispose();
         }
     }
 
+    /**
+     * Writes the specified command to the program.
+     * 
+     * @param strs: list of commands
+     */
     private void writeCommands(List<String> strs) {
         for (String s : strs) {
             writeToConsole(s + "\n");
         }
     }
 
+    /**
+     * Gets the debugger output.
+     */
     private void getOutputs() {
         while (jdbout.hasNext()) {
             String line = jdbout.next();
@@ -114,16 +142,32 @@ public class Tracer {
         jdbout.close();
     }
 
+    /**
+     * Gets the STDOUT of jdb.
+     * 
+     * @return stdout
+     */
     private Scanner getSTDOUT() {
         return new Scanner(shell.getInputStream()).useDelimiter("\\n");
     }
 
+    /**
+     * Gets the STDIN of jdb.
+     * 
+     * @return stdin
+     */
     private PrintWriter getSTDIN() {
         OutputStream os = shell.getOutputStream();
         PrintWriter jdbin = new PrintWriter(os);
         return jdbin;
     }
 
+    /**
+     * Gets the shell process.
+     * 
+     * @param file root directory
+     * @return process
+     */
     private Process getShell(File file) throws IOException {
         String[] flags = { "jdb", "-connect", "com.sun.jdi.SocketAttach:hostname=localhost,port=8000" };
         ProcessBuilder builder = new ProcessBuilder(flags);
@@ -132,6 +176,9 @@ public class Tracer {
         return builder.start();
     }
 
+    /**
+     * Runs the program.
+     */
     private void runProgram() throws InterruptedException, IOException {
         String[] flags = { "java", "-Xdebug", "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y",
                 this.className };
@@ -144,6 +191,9 @@ public class Tracer {
         thread.start();
     }
 
+    /**
+     * Runs the compiler.
+     */
     private void runCompiler() throws IOException {
         List<String> args = new ArrayList<String>();
         args.add("javac");
@@ -168,6 +218,9 @@ public class Tracer {
         }
     }
 
+    /**
+     * Writes a single line to the console.
+     */
     private void writeToConsole(String str) {
         jdbin.write(str);
         jdbin.flush();

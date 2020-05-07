@@ -18,6 +18,9 @@ import javax.swing.tree.TreePath;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
+/**
+ * The GUI for the stack tree. Extends JFrame.
+ */
 public class TreeGUI extends JFrame {
     private static final long serialVersionUID = 1L;
     private JTree tree;
@@ -26,6 +29,11 @@ public class TreeGUI extends JFrame {
     private static int windowDimension;
     private DefaultMutableTreeNode root;
 
+    /**
+     * The TreeGUI constructor.
+     * 
+     * @param name program name
+     */
     public TreeGUI(String name) {
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             public void uncaughtException(Thread t, Throwable e) {
@@ -92,6 +100,12 @@ public class TreeGUI extends JFrame {
         this.setVisible(true);
     }
 
+    /**
+     * Gets the stack.
+     * 
+     * @param thread thread name
+     * @return TreeNode stack
+     */
     private Stack<TreeNode> getStack(String thread) {
         if (this.stackMap.containsKey(thread)) {
             return this.stackMap.get(thread);
@@ -104,15 +118,32 @@ public class TreeGUI extends JFrame {
         return this.stackMap.get(thread);
     }
 
+    /**
+     * Gets the model.
+     * 
+     * @return DefaultTreeModel
+     */
     private DefaultTreeModel getModel() {
         return (DefaultTreeModel) this.tree.getModel();
     }
 
+    /**
+     * Creates a new node.
+     * 
+     * @param event stack event
+     * @return DefaultMutableTreeNode
+     */
     private DefaultMutableTreeNode newNode(StackEvent event) {
         DefaultMutableTreeNode node = new DefaultMutableTreeNode(event);
         return node;
     }
 
+    /**
+     * Jumps a layer into the stack.
+     * 
+     * @param method method name
+     * @param thread thread name
+     */
     public void popIn(String method, String thread) {
         StackEvent event = new StackEvent(method, thread);
         DefaultMutableTreeNode newNode = newNode(event);
@@ -122,6 +153,9 @@ public class TreeGUI extends JFrame {
         this.expand(thread, parentNode);
     }
 
+    /**
+     * Resizes the window to fit.
+     */
     private void resizeToFit() {
         if (this.getWidth() < TreeGUI.windowDimension) {
             this.setSize(TreeGUI.windowDimension, this.getHeight());
@@ -131,11 +165,23 @@ public class TreeGUI extends JFrame {
         }
     }
 
+    /**
+     * Jumps out of a layer on the stack.
+     * 
+     * @param returnValue return value
+     * @param thread      thread name
+     */
     public void popOut(String returnValue, String thread) {
         TreeNode top = this.getStack(thread).pop();
         top.getEvent().setReturnValue(returnValue);
     }
 
+    /**
+     * Expands a node on the graphical UI.
+     * 
+     * @param thread     thread name
+     * @param parentNode parent node
+     */
     private void expand(String thread, TreeNode parentNode) {
         this.getModel().reload(this.getStack(thread).firstElement().getNode());
         this.tree.expandPath(new TreePath(parentNode.getNode().getPath()));
