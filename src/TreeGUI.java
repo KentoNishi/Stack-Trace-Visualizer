@@ -81,6 +81,11 @@ public class TreeGUI extends JFrame {
         this.setLocationRelativeTo(null);
         this.setAlwaysOnTop(true);
         this.setVisible(true);
+        this.addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent e) {
+                System.exit(0);
+            }
+        });
     }
 
     /**

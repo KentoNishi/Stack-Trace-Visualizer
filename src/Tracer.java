@@ -124,11 +124,12 @@ public class Tracer {
             if (tokenized[0].startsWith("Method exited:")) {
                 thread = tokenized[1].substring(" \"thread=".length(), tokenized[1].length() - 1);
                 method = tokenized[2].substring(1, tokenized[2].length());
-                if (method.startsWith("jdk")) {
+                if (method.startsWith("jdk.internal")) {
                     continue;
                 }
                 String returnValue = tokenized[0].substring("Method exited: return value = ".length(),
                         tokenized[0].length());
+                // System.out.println("Exited " + method);
                 this.gui.popOut(returnValue, thread);
             } else if (tokenized[0].startsWith("Method entered:")) {
                 thread = tokenized[0].substring("Method entered: \"thread=".length(), tokenized[0].length() - 1);
@@ -136,6 +137,7 @@ public class Tracer {
                 if (method.startsWith("jdk.internal")) {
                     continue;
                 }
+                // System.out.println("Entered " + method);
                 this.gui.popIn(method, thread);
             }
         }
