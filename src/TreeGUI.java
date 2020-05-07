@@ -12,6 +12,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -60,6 +61,7 @@ public class TreeGUI extends JFrame {
         JScrollPane scrollTree = new JScrollPane(this.tree);
         scrollTree.setViewportView(this.tree);
         scrollTree.setVisible(true);
+        this.tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         this.tree.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 onSelected();
@@ -81,6 +83,9 @@ public class TreeGUI extends JFrame {
         this.setVisible(true);
     }
 
+    /**
+     * The callback function that runs when a node is clicked.
+     */
     private void onSelected() {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
         if (node == null) {
@@ -108,6 +113,7 @@ public class TreeGUI extends JFrame {
         popup.setLocationRelativeTo(null);
         popup.setAlwaysOnTop(true);
         popup.setVisible(true);
+        this.tree.clearSelection();
     }
 
     /**
