@@ -167,6 +167,7 @@ public class Tracer {
      * 
      * @param file root directory
      * @return process
+     * @throws IOException IOException
      */
     private Process getShell(File file) throws IOException {
         String[] flags = { "jdb", "-connect", "com.sun.jdi.SocketAttach:hostname=localhost,port=8000" };
@@ -178,6 +179,9 @@ public class Tracer {
 
     /**
      * Runs the program.
+     * 
+     * @throws IOException          IOException
+     * @throws InterruptedException InterruptedException
      */
     private void runProgram() throws InterruptedException, IOException {
         String[] flags = { "java", "-Xdebug", "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y",
@@ -193,6 +197,8 @@ public class Tracer {
 
     /**
      * Runs the compiler.
+     * 
+     * @throws IOException IOException
      */
     private void runCompiler() throws IOException {
         List<String> args = new ArrayList<String>();
@@ -220,6 +226,8 @@ public class Tracer {
 
     /**
      * Writes a single line to the console.
+     * 
+     * @param str line
      */
     private void writeToConsole(String str) {
         jdbin.write(str);
