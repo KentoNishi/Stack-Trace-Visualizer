@@ -19,6 +19,7 @@ public class Tracer {
     private File parentDirectory;
     private TreeGUI gui;
     private ProgramRunner runner;
+    private String escapeString;
 
     /**
      * The Tracer constructor.
@@ -63,7 +64,8 @@ public class Tracer {
             shell = getShell(parentDirectory);
             jdbin = getSTDIN();
             jdbout = getSTDOUT();
-            this.gui = new TreeGUI(className);
+            gui = new TreeGUI(className);
+            escapeString = java.util.UUID.randomUUID().toString();
             try {
                 runProgram();
             } catch (InterruptedException e) {
@@ -84,6 +86,7 @@ public class Tracer {
         commands.add("run " + className);
         commands.add("clear " + className + ".main");
         commands.add("trace methods");
+        commands.add("monitor " + escapeString);
         commands.add("monitor resume");
         commands.add("resume");
         writeCommands(commands);
@@ -120,7 +123,7 @@ public class Tracer {
             String line = "";
             while (jdbout.hasNextLine()) {
                 line = jdbout.nextLine();
-                if (line.equals("All threads resumed.")) {
+                if (line.equals("Unrecognized command: '" + escapeString + "'.  Try help...")) {
                     break;
                 }
                 builder.append(line);
@@ -129,6 +132,9 @@ public class Tracer {
             line = line.substring(4, line.length());
             try {
                 String[] tokenized = line.split(",");
+                tokenized[0] = tokenized[0].substring(
+                        "All threads resumed.> > ".length() + 1 + tokenized[0].split(" ")[0].length(),
+                        tokenized[0].length());
                 String thread = "";
                 String method = "";
                 String returnValue = "";
