@@ -1,6 +1,5 @@
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
@@ -127,14 +126,12 @@ public class Tracer {
                     break;
                 }
                 builder.append(line);
+                builder.append("\\n");
             }
             line = builder.toString();
-            line = line.substring(4, line.length());
             try {
                 String[] tokenized = line.split(",");
-                tokenized[0] = tokenized[0].substring(
-                        "All threads resumed.> > ".length() + 1 + tokenized[0].split(" ")[0].length(),
-                        tokenized[0].length());
+                tokenized[0] = tokenized[0].substring(tokenized[0].indexOf("Method "), tokenized[0].length());
                 String thread = "";
                 String method = "";
                 String returnValue = "";
@@ -164,7 +161,7 @@ public class Tracer {
                     }
                     this.gui.popIn(method, thread);
                 }
-            } catch (ArrayIndexOutOfBoundsException e) {
+            } catch (ArrayIndexOutOfBoundsException | StringIndexOutOfBoundsException e) {
             }
         }
         jdbout.close();
