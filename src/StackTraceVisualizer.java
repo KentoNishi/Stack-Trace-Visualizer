@@ -5,9 +5,8 @@ import java.util.prefs.*;
 /**
  * Launches the tracer and graphical user interface.
  */
-public class Launcher {
+public class StackTraceVisualizer {
     private static JFrame frame;
-    private static Tracer tracer;
 
     /**
      * Runs the launcher.
@@ -19,7 +18,7 @@ public class Launcher {
             frame = new JFrame();
             String prompt = "";
             while (prompt.length() == 0) {
-                Preferences prefs = Preferences.userNodeForPackage(Launcher.class);
+                Preferences prefs = Preferences.userNodeForPackage(StackTraceVisualizer.class);
                 frame.setAlwaysOnTop(true);
                 prompt = (String) JOptionPane.showInputDialog(frame,
                         "Enter the path to the .class file containing your main method.", "Stack Tracer",
@@ -29,7 +28,7 @@ public class Launcher {
                 }
                 prefs.put("runPath", prompt);
                 if ((prompt.length() > 0)) {
-                    tracer = new Tracer(prompt);
+                    Tracer tracer = new Tracer(prompt);
                     tracer.runTrace();
                 }
             }
