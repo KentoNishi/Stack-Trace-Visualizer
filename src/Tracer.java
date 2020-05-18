@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
@@ -18,6 +19,7 @@ public class Tracer {
     private File parentDirectory;
     private TreeGUI gui;
     private ProgramRunner runner;
+    private InputStream jdboutStream;
 
     /**
      * The Tracer constructor.
@@ -62,6 +64,7 @@ public class Tracer {
             shell = getShell(parentDirectory);
             jdbin = getSTDIN();
             jdbout = getSTDOUT();
+            jdboutStream = shell.getInputStream();
             this.gui = new TreeGUI(className);
             try {
                 runProgram();
@@ -82,7 +85,7 @@ public class Tracer {
         commands.add("stop in " + className + ".main");
         commands.add("run " + className);
         commands.add("clear " + className + ".main");
-        commands.add("trace go methods");
+        commands.add("trace methods");
         commands.add("resume");
         writeCommands(commands);
         getOutputs();
@@ -114,29 +117,49 @@ public class Tracer {
      */
     private void getOutputs() {
         while (jdbout.hasNext()) {
-            String line = jdbout.next();
-            String[] tokenized = line.split(",");
-            String thread;
-            String method;
-            if (tokenized.length < 3) {
-                continue;
+            try {
+                while (jdboutStream.available() == 0) {
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            if (tokenized[0].startsWith("Method exited:")) {
-                thread = tokenized[1].substring(" \"thread=".length(), tokenized[1].length() - 1);
-                method = tokenized[2].substring(1, tokenized[2].length());
-                if (method.startsWith("jdk.internal")) {
+            StringBuilder builder = new StringBuilder("");
+            try {
+                while (jdboutStream.available() > 0) {
+                    builder.append((char) jdboutStream.read());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            String line = builder.toString();
+            writeToConsole("resume\n");
+            try {
+                line = line.split("\n")[1];
+                String[] tokenized = line.split(",");
+                String thread;
+                String method;
+                if (tokenized.length < 3) {
                     continue;
                 }
-                String returnValue = tokenized[0].substring("Method exited: return value = ".length(),
-                        tokenized[0].length());
-                this.gui.popOut(returnValue, thread);
-            } else if (tokenized[0].startsWith("Method entered:")) {
-                thread = tokenized[0].substring("Method entered: \"thread=".length(), tokenized[0].length() - 1);
-                method = tokenized[1].substring(1, tokenized[1].length());
-                if (method.startsWith("jdk.internal")) {
-                    continue;
+                if (tokenized[0].startsWith("Method exited:")) {
+                    thread = tokenized[1].substring(" \"thread=".length(), tokenized[1].length() - 1);
+                    method = tokenized[2].substring(1, tokenized[2].length());
+                    if (method.startsWith("jdk.internal")) {
+                        continue;
+                    }
+                    String returnValue = tokenized[0].substring("Method exited: return value = ".length(),
+                            tokenized[0].length());
+                    this.gui.popOut(returnValue, thread);
+                } else if (tokenized[0].startsWith("Method entered:")) {
+                    thread = tokenized[0].substring("Method entered: \"thread=".length(), tokenized[0].length() - 1);
+                    method = tokenized[1].substring(1, tokenized[1].length());
+                    if (method.startsWith("jdk.internal")) {
+                        continue;
+                    }
+                    this.gui.popIn(method, thread);
                 }
-                this.gui.popIn(method, thread);
+            } catch (ArrayIndexOutOfBoundsException e) {
+                e.printStackTrace();
             }
         }
         jdbout.close();
@@ -217,6 +240,7 @@ public class Tracer {
         builder.directory(this.parentDirectory);
         try {
             Process process = builder.start();
+            process.getInputStream().close();
             process.waitFor();
 
         } catch (InterruptedException e) {
