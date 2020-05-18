@@ -37,6 +37,5 @@ public class Launcher {
             JOptionPane.showMessageDialog(frame, error.toString(), "Stack Tracer", JOptionPane.ERROR_MESSAGE);
             error.printStackTrace();
         }
-        System.exit(0);
     }
 }

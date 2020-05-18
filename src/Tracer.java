@@ -19,7 +19,6 @@ public class Tracer {
     private File parentDirectory;
     private TreeGUI gui;
     private ProgramRunner runner;
-    private InputStream jdboutStream;
 
     /**
      * The Tracer constructor.
@@ -64,7 +63,6 @@ public class Tracer {
             shell = getShell(parentDirectory);
             jdbin = getSTDIN();
             jdbout = getSTDOUT();
-            jdboutStream = shell.getInputStream();
             this.gui = new TreeGUI(className);
             try {
                 runProgram();
@@ -86,6 +84,7 @@ public class Tracer {
         commands.add("run " + className);
         commands.add("clear " + className + ".main");
         commands.add("trace methods");
+        commands.add("monitor resume");
         commands.add("resume");
         writeCommands(commands);
         getOutputs();
@@ -117,37 +116,38 @@ public class Tracer {
      */
     private void getOutputs() {
         while (jdbout.hasNext()) {
-            try {
-                while (jdboutStream.available() == 0) {
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             StringBuilder builder = new StringBuilder("");
-            try {
-                while (jdboutStream.available() > 0) {
-                    builder.append((char) jdboutStream.read());
+            String line = "";
+            while (jdbout.hasNextLine()) {
+                line = jdbout.nextLine();
+                if (line.equals("All threads resumed.")) {
+                    break;
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+                builder.append(line);
             }
-            String line = builder.toString();
-            writeToConsole("resume\n");
+            line = builder.toString();
+            line = line.substring(4, line.length());
             try {
-                line = line.split("\n")[1];
                 String[] tokenized = line.split(",");
-                String thread;
-                String method;
-                if (tokenized.length < 3) {
-                    continue;
+                String thread = "";
+                String method = "";
+                String returnValue = "";
+                for (int i = tokenized.length - 1; i >= 0; i--) {
+                    if (tokenized[i].startsWith(" \"thread=")) {
+                        thread = tokenized[i].substring(" \"thread=".length(), tokenized[i].length() - 1);
+                        method = tokenized[i + 1].substring(1, tokenized[i + 1].length());
+                        for (int j = 0; j < i - 1; j++) {
+                            returnValue += tokenized[j] + ",";
+                        }
+                        returnValue += tokenized[i + 1];
+                        break;
+                    }
                 }
                 if (tokenized[0].startsWith("Method exited:")) {
-                    thread = tokenized[1].substring(" \"thread=".length(), tokenized[1].length() - 1);
-                    method = tokenized[2].substring(1, tokenized[2].length());
                     if (method.startsWith("jdk.internal")) {
                         continue;
                     }
-                    String returnValue = tokenized[0].substring("Method exited: return value = ".length(),
+                    returnValue = tokenized[0].substring("Method exited: return value = ".length(),
                             tokenized[0].length());
                     this.gui.popOut(returnValue, thread);
                 } else if (tokenized[0].startsWith("Method entered:")) {
@@ -159,7 +159,6 @@ public class Tracer {
                     this.gui.popIn(method, thread);
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
-                e.printStackTrace();
             }
         }
         jdbout.close();
