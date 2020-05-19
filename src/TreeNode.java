@@ -19,6 +19,9 @@ public class TreeNode {
         this.event = event;
         this.parent = parent;
         this.node = node;
+        if (this.event != null) {
+            this.event.setReturnValue("<unreturned>");
+        }
     }
 
     /**

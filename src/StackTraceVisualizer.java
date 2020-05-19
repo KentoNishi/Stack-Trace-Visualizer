@@ -21,7 +21,7 @@ public class StackTraceVisualizer {
                 Preferences prefs = Preferences.userNodeForPackage(StackTraceVisualizer.class);
                 frame.setAlwaysOnTop(true);
                 prompt = (String) JOptionPane.showInputDialog(frame,
-                        "Enter the path to the .class file containing your main method.", "Stack Tracer",
+                        "Enter the path to the .class file containing your main method.", "Stack Trace Visualizer",
                         JOptionPane.PLAIN_MESSAGE, null, null, prefs.get("runPath", ""));
                 if (prompt == null || prompt.length() == 0) {
                     exit();
@@ -31,7 +31,7 @@ public class StackTraceVisualizer {
                 tracer.runTrace();
             }
         } catch (Exception error) {
-            JOptionPane.showMessageDialog(frame, error.toString(), "Stack Tracer", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(frame, error.toString(), "Error", JOptionPane.ERROR_MESSAGE);
             error.printStackTrace();
         }
     }

@@ -76,7 +76,7 @@ public class TreeGUI extends JFrame {
         });
         this.add(scrollTree);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setTitle("Stack Trace: " + this.name);
+        this.setTitle("Stack Trace Visualizer: " + this.name);
         this.resizeToFit();
         this.setLocationRelativeTo(null);
         this.setAlwaysOnTop(true);
