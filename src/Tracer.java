@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.ProcessBuilder.Redirect;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -19,6 +20,7 @@ public class Tracer {
     private TreeGUI gui;
     private ProgramRunner runner;
     private String escapeString;
+    private String port;
 
     /**
      * The Tracer constructor.
@@ -60,6 +62,7 @@ public class Tracer {
             if (!fileType.equals("class")) {
                 throw new IllegalArgumentException("The file specified is not a compiled .class file.");
             }
+            port = Integer.toString(findPort());
             shell = getShell(parentDirectory);
             jdbin = getSTDIN();
             jdbout = getSTDOUT();
@@ -195,7 +198,7 @@ public class Tracer {
      * @throws IOException IOException
      */
     private Process getShell(File file) throws IOException {
-        String[] flags = { "jdb", "-connect", "com.sun.jdi.SocketAttach:hostname=localhost,port=8000" };
+        String[] flags = { "jdb", "-connect", "com.sun.jdi.SocketAttach:hostname=localhost,port=" + port };
         ProcessBuilder builder = new ProcessBuilder(flags);
         builder.redirectErrorStream(true);
         builder.directory(file);
@@ -209,7 +212,7 @@ public class Tracer {
      * @throws InterruptedException InterruptedException
      */
     private void runProgram() throws InterruptedException, IOException {
-        String[] flags = { "java", "-Xdebug", "-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y",
+        String[] flags = { "java", "-Xdebug", "-Xrunjdwp:transport=dt_socket,address=" + port + ",server=y,suspend=y",
                 this.className };
         ProcessBuilder builder = new ProcessBuilder(flags);
         builder.redirectErrorStream(true);
@@ -259,4 +262,27 @@ public class Tracer {
         jdbin.write(str);
         jdbin.flush();
     }
+
+    /**
+     * Finds an open port.
+     * 
+     * @return open port number
+     */
+    private int findPort() {
+        ServerSocket s = null;
+        try {
+            s = new ServerSocket(0);
+            return s.getLocalPort();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            assert s != null;
+            try {
+                s.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
