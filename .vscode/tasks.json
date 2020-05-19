@@ -6,7 +6,7 @@
         {
             "label": "Compile to JAR",
             "type": "shell",
-            "command": "cd src && javadoc *.java -d ../docs && javac *.java && jar cfm ../StackTraceVisualizer.jar manifest.mf *.class",
+            "command": "cd src && javadoc *.java -private -d ../docs && javac *.java && jar cfm ../StackTraceVisualizer.jar manifest.mf *.class",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
