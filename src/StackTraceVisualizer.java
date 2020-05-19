@@ -23,18 +23,20 @@ public class StackTraceVisualizer {
                 prompt = (String) JOptionPane.showInputDialog(frame,
                         "Enter the path to the .class file containing your main method.", "Stack Tracer",
                         JOptionPane.PLAIN_MESSAGE, null, null, prefs.get("runPath", ""));
-                if (prompt == null) {
-                    break;
+                if (prompt == null || prompt.length() == 0) {
+                    exit();
                 }
                 prefs.put("runPath", prompt);
-                if ((prompt.length() > 0)) {
-                    Tracer tracer = new Tracer(prompt);
-                    tracer.runTrace();
-                }
+                Tracer tracer = new Tracer(prompt);
+                tracer.runTrace();
             }
         } catch (Exception error) {
             JOptionPane.showMessageDialog(frame, error.toString(), "Stack Tracer", JOptionPane.ERROR_MESSAGE);
             error.printStackTrace();
         }
+    }
+
+    private static void exit() {
+        System.exit(0);
     }
 }
