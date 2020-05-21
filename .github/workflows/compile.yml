@@ -11,16 +11,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+      - run: |
+          git fetch --prune --tags
+          git checkout logs
+          git checkout master
       - uses: actions/setup-java@v1
         with:
           java-version: '8'
           java-package: jdk
           architecture: x64
+      - uses: oleksiyrudenko/gha-git-credentials@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
       - run: |
           cd src
           javadoc *.java -private -d ../docs
           javac *.java
           jar cfm ../StackTraceVisualizer.jar manifest.mf *.class
+          echo Merging
+          git merge logs --no-commit --no-ff -X theirs --allow-unrelated-histories
+          echo Resetting
+          git reset master
       - uses: EndBug/add-and-commit@v4
         with:
           ref: 'gh-pages'
