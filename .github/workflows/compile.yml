@@ -1,6 +1,9 @@
 name: Compile JAR & Javadocs
 
-on: push
+on: 
+  release:
+    types:
+      - published
 
 jobs:
   compile:
