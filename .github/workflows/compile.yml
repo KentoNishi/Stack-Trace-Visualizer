@@ -1,41 +1,41 @@
 name: Compile JAR & Javadocs
 
-on:
-  push:
-    branches:
-      - master
+on: push
 
 jobs:
   compile:
-    name: Compile JAR & Javadocs
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Clone repository 
+        uses: actions/checkout@v2
         with:
           fetch-depth: 0
           persist-credentials: true
-      - run: |
+      - name: Clone all branches
+        run: |
           git fetch --prune --tags
-          git checkout logs
+          git checkout meta
           git checkout master
-      - uses: actions/setup-java@v1
+      - name: Set up Java
+        uses: actions/setup-java@v1
         with:
           java-version: '8'
           java-package: jdk
           architecture: x64
-      - uses: oleksiyrudenko/gha-git-credentials@v1
+      - name: Configure GitHub credentials
+        uses: oleksiyrudenko/gha-git-credentials@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      - run: |
+      - name: Copy files to gh-pages branch
+        run: |
           cd src
           javadoc *.java -private -d ../docs
           javac *.java
           jar cfm ../StackTraceVisualizer.jar manifest.mf *.class
-          echo Merging
-          git merge logs --no-commit --no-ff -X theirs --allow-unrelated-histories
-          echo Resetting
+          git merge meta --no-commit --no-ff -X theirs --allow-unrelated-histories
           git reset master
-      - uses: EndBug/add-and-commit@v4
+      - name: Push to GitHub
+        uses: EndBug/add-and-commit@v4
         with:
           ref: 'gh-pages'
           force: true
