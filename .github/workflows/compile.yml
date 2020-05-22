@@ -37,6 +37,7 @@ jobs:
           jar cfm ../StackTraceVisualizer.jar manifest.mf *.class
           git merge meta --no-commit --no-ff -X theirs --allow-unrelated-histories
           git reset master
+          zip -r ../StackTraceVisualizer.zip ./ -x '*.git*'
       - name: Push to GitHub
         uses: EndBug/add-and-commit@v4
         with:
@@ -44,3 +45,19 @@ jobs:
           force: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload zip to release
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: StackTraceVisualizer.zip
+          asset_name: StackTraceVisualizer.zip
+          tag: ${{ github.ref }}
+          overwrite: true
+      - name: Upload jar to release
+        uses: svenstaro/upload-release-action@v1-release
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: StackTraceVisualizer.jar
+          asset_name: StackTraceVisualizer.jar
+          tag: ${{ github.ref }}
+          overwrite: true
