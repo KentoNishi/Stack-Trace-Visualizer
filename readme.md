@@ -7,4 +7,4 @@ An interactive graphical interface to visualize the Java call stack.
 
 [Documentation](https://kentonishi.github.io/Stack-Trace-Visualizer/docs)
 
-[Logs](https://kentonishi.github.io/Stack-Trace-Visualizer/logs)
+[Development Logs](https://kentonishi.github.io/Stack-Trace-Visualizer/logs)

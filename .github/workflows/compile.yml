@@ -4,9 +4,11 @@ on:
   release:
     types:
       - published
+      - edited
 
 jobs:
   compile:
+    name: Compile JAR & Javadocs
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository 
@@ -38,13 +40,7 @@ jobs:
           git merge meta --no-commit --no-ff -X theirs --allow-unrelated-histories
           git reset master
           zip -r ../StackTraceVisualizer.zip ./ -x '*.git*'
-      - name: Push to GitHub
-        uses: EndBug/add-and-commit@v4
-        with:
-          ref: 'gh-pages'
-          force: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          cd ..
       - name: Upload zip to release
         uses: svenstaro/upload-release-action@v1-release
         with:
@@ -61,3 +57,9 @@ jobs:
           asset_name: StackTraceVisualizer.jar
           tag: ${{ github.ref }}
           overwrite: true
+      - name: Push to GitHub
+        uses: EndBug/add-and-commit@v4
+        with:
+          ref: 'gh-pages'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
