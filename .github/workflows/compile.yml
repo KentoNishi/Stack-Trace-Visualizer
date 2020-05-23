@@ -39,8 +39,8 @@ jobs:
           jar cfm ../StackTraceVisualizer.jar manifest.mf *.class
           git merge meta --no-commit --no-ff -X theirs --allow-unrelated-histories
           git reset master
-          zip -r ../StackTraceVisualizer.zip ./ -x '*.git*'
           cd ..
+          zip -r StackTraceVisualizer.zip ./ -x '*.git*'
       - name: Upload zip to release
         uses: svenstaro/upload-release-action@v1-release
         with:
