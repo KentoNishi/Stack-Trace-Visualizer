@@ -48,19 +48,22 @@ public class Tracer {
                 System.out.println("Searching for files...");
                 runCompiler();
             }
+            String please = "Please enter a valid file path.";
             if (!path.isFile()) {
                 throw new IllegalArgumentException(
-                        "The class specified does not exist. Make sure you inputted the correct .class file.");
+                        "The specified class file \"" + classPath + "\" does not exist. " + please);
             }
             String classFilename = path.getName();
             String[] parsedFilename = classFilename.split("\\.");
             if (parsedFilename.length < 2) {
-                throw new IllegalArgumentException("The file specified is missing a file type extension.");
+                throw new IllegalArgumentException(
+                        "The specified class file \"" + classPath + "\" is missing a file type extension. " + please);
             }
             className = parsedFilename[0];
             String fileType = parsedFilename[1];
             if (!fileType.equals("class")) {
-                throw new IllegalArgumentException("The file specified is not a compiled .class file.");
+                throw new IllegalArgumentException(
+                        "The file specified has the extension \"" + fileType + "\" instead of \"class\"." + please);
             }
             port = Integer.toString(findPort());
             shell = getShell(parentDirectory);
