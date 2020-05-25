@@ -4,12 +4,12 @@
 
 | Class | Description |
 |:----|:----|
-| [StackTraceVisualizer](#StackTraceVisualizer) | Launches the tracer and graphical user interface. |
-| [Tracer](#Tracer) | Communicates with the debugger and generates the stack trace. |
-| [TreeGUI](#TreeGUI) | Opens the graphical user interface that displays the stack tree. |
-| [StackEvent](#StackEvent) | A data carrier class that holds stack event data. |
-| [TreeNode](#TreeNode) | A data carrier class that holds tree node data. |
-| [ProcessRunner](#ProcessRunner) | A runnable container to run a process on a separate thread. |
+| [StackTraceVisualizer](#stacktracevisualizer) | Launches the tracer and graphical user interface. |
+| [Tracer](#tracer) | Communicates with the debugger and generates the stack trace. |
+| [TreeGUI](#treegui) | Opens the graphical user interface that displays the stack tree. |
+| [StackEvent](#stackevent) | A data carrier class that holds stack event data. |
+| [TreeNode](#treenode) | A data carrier class that holds tree node data. |
+| [ProcessRunner](#processrunner) | A runnable container to run a process on a separate thread. |
 
 ## Methods
 ### StackTraceVisualizer
