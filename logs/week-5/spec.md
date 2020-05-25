@@ -1,4 +1,4 @@
-# Preliminary Specification
+# Specification
 
 ## Classes
 
@@ -16,14 +16,16 @@
 
 | Method | Description |
 |:----|:----|
-| `private static void exit()` | Exits the program. |
 | `public static void main(String[])` | Runs the tracer. |
+| `private static void exit()` | Exits the program. |
 
 ### Tracer
 
 | Method | Description |
 |:----|:----|
-| `void closeWindow()` | Closes the TreeGUI window. |
+| `public Tracer(String)` | The Tracer constructor. |
+| `public Tracer(String, boolean)` | The Tracer constructor with a compiler flag. |
+| `public void closeWindow()` | Closes the TreeGUI window. |
 | `private int findPort()` | Finds an open port. |
 | `private void getOutputs()` | Gets the debugger output. |
 | `private Process getShell(File file)` | Gets the shell process. |
@@ -31,7 +33,7 @@
 | `private Scanner getSTDOUT()` | Gets the STDOUT of jdb. |
 | `private void runCompiler()` | Runs the compiler. |
 | `private void runProgram()` | Runs the program. |
-| `void runTrace()` | Gets the stack trace. |
+| `public void runTrace()` | Gets the stack trace. |
 | `private void writeCommands(List<String> strs)` | Writes the specified command to the program. |
 | `private void writeToConsole(String str)` | Writes a single line to the console. |
 
@@ -39,13 +41,14 @@
 
 | Method | Description |
 |:----|:----|
+| `public TreeGUI(String)` | The TreeGUI constructor. |
 | `private void expand(String thread, TreeNode parentNode)` | Expands a node on the graphical UI. |
-| `private javax.swing.tree.DefaultTreeModel getModel()` | Gets the model. |
+| `private DefaultTreeModel getModel()` | Gets the model. |
 | `private Stack<TreeNode> getStack(String thread)` | Gets the stack. |
-| `private javax.swing.tree.DefaultMutableTreeNode newNode(StackEvent event)` | Creates a new node. |
+| `private DefaultMutableTreeNode newNode(StackEvent event)` | Creates a new node. |
 | `private void onSelected()` | The callback function that runs when a node is clicked. |
-| `void popIn(String method, String thread)` | Jumps a layer into the stack. |
-| `void popOut(String returnValue, String thread)` | Jumps out of a layer on the stack. |
+| `public void popIn(String method, String thread)` | Jumps a layer into the stack. |
+| `public void popOut(String returnValue, String thread)` | Jumps out of a layer on the stack. |
 | `private void resizeToFit()` | Resizes the window to fit. |
 
 ### StackEvent
@@ -78,7 +81,7 @@
 
 | Method | Description |
 |:----|:----|
-| `ProcessRunner(ProcessBuilder)` | The ProcessRunner constructor. |
+| `public ProcessRunner(ProcessBuilder)` | The ProcessRunner constructor. |
 | `public void run()` | Runs the process specified in the constructor. |
 
 ## Class Diagram
