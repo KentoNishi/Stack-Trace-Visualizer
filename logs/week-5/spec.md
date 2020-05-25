@@ -28,27 +28,27 @@
 | `public void closeWindow()` | Closes the TreeGUI window. |
 | `private int findPort()` | Finds an open port. |
 | `private void getOutputs()` | Gets the debugger output. |
-| `private Process getShell(File file)` | Gets the shell process. |
+| `private Process getShell(File)` | Gets the shell process. |
 | `private PrintWriter getSTDIN()` | Gets the STDIN of jdb. |
 | `private Scanner getSTDOUT()` | Gets the STDOUT of jdb. |
 | `private void runCompiler()` | Runs the compiler. |
 | `private void runProgram()` | Runs the program. |
 | `public void runTrace()` | Gets the stack trace. |
-| `private void writeCommands(List<String> strs)` | Writes the specified command to the program. |
-| `private void writeToConsole(String str)` | Writes a single line to the console. |
+| `private void writeCommands(List<String>)` | Writes the specified command to the program. |
+| `private void writeToConsole(String)` | Writes a single line to the console. |
 
 ### TreeGUI (extends JFrame)
 
 | Method | Description |
 |:----|:----|
 | `public TreeGUI(String)` | The TreeGUI constructor. |
-| `private void expand(String thread, TreeNode parentNode)` | Expands a node on the graphical UI. |
+| `private void expand(String, TreeNode)` | Expands a node on the graphical UI. |
 | `private DefaultTreeModel getModel()` | Gets the model. |
-| `private Stack<TreeNode> getStack(String thread)` | Gets the stack. |
-| `private DefaultMutableTreeNode newNode(StackEvent event)` | Creates a new node. |
+| `private Stack<TreeNode> getStack(String)` | Gets the stack. |
+| `private DefaultMutableTreeNode newNode(StackEvent)` | Creates a new node. |
 | `private void onSelected()` | The callback function that runs when a node is clicked. |
-| `public void popIn(String method, String thread)` | Jumps a layer into the stack. |
-| `public void popOut(String returnValue, String thread)` | Jumps out of a layer on the stack. |
+| `public void popIn(String, String)` | Jumps a layer into the stack. |
+| `public void popOut(String, String)` | Jumps out of a layer on the stack. |
 | `private void resizeToFit()` | Resizes the window to fit. |
 
 ### StackEvent
