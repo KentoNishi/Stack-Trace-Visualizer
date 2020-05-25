@@ -18,3 +18,4 @@
 ## Week 5
 * [Specification](./week-5/spec)
 * [Class Diagram](./week-5/classes.png)
+* [Reflection](./week-5/reflection)
