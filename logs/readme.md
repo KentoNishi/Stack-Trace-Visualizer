@@ -17,3 +17,4 @@
 
 ## Week 5
 * [Class Diagram](./week-5/classes.png)
+* [Specification](./week-5/spec)
