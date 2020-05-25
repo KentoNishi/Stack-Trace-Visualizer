@@ -19,7 +19,7 @@ import java.awt.Toolkit;
 import java.awt.event.*;
 
 /**
- * The GUI for the stack tree. Extends JFrame.
+ * 	Opens the graphical user interface that displays the stack tree.
  */
 public class TreeGUI extends JFrame {
     private static final long serialVersionUID = 1L;

@@ -1,7 +1,7 @@
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
- * A data class to hold tree node information.
+ * A data carrier class that holds tree node data.
  */
 public class TreeNode {
     private TreeNode parent;

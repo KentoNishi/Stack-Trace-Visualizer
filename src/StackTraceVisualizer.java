@@ -9,7 +9,7 @@ public class StackTraceVisualizer {
     private static JFrame frame;
 
     /**
-     * Runs the launcher.
+     * Runs the tracer.
      * 
      * @param args arguments
      */
@@ -36,6 +36,9 @@ public class StackTraceVisualizer {
         }
     }
 
+    /**
+     * Exits the program.
+     */
     private static void exit() {
         System.exit(0);
     }

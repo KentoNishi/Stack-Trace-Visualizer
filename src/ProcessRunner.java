@@ -5,16 +5,16 @@ import java.util.Scanner;
 /**
  * A runnable container to run a process on a separate thread.
  */
-public class ProgramRunner implements Runnable {
+public class ProcessRunner implements Runnable {
 
     private ProcessBuilder builder;
 
     /**
-     * The ProgramRunner constructor.
+     * The ProcessRunner constructor.
      * 
      * @param builder the process builder for the thread.
      */
-    public ProgramRunner(ProcessBuilder builder) {
+    public ProcessRunner(ProcessBuilder builder) {
         this.builder = builder;
     }
 

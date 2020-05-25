@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * The stack tracer class.
+ * Communicates with the debugger and generates the stack trace.
  */
 public class Tracer {
     private Process shell;
@@ -18,7 +18,7 @@ public class Tracer {
     private String className;
     private File parentDirectory;
     private TreeGUI gui;
-    private ProgramRunner runner;
+    private ProcessRunner runner;
     private String escapeString;
     private String port;
 
@@ -221,7 +221,7 @@ public class Tracer {
         builder.redirectErrorStream(true);
         builder.directory(parentDirectory);
         builder.redirectInput(Redirect.INHERIT);
-        this.runner = new ProgramRunner(builder);
+        this.runner = new ProcessRunner(builder);
         Thread thread = new Thread(this.runner);
         thread.start();
     }

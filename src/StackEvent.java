@@ -2,7 +2,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 /**
- * A data class to hold stack event information.
+ * 	A data carrier class that holds stack event data.
  */
 public class StackEvent {
     private String eventMethod;
