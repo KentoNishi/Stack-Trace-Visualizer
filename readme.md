@@ -1,5 +1,7 @@
-# [Stack Trace Visualizer](https://kentonishi.github.io/Stack-Trace-Visualizer/)
+# Stack Trace Visualizer
 An interactive graphical interface to visualize the Java call stack.
+
+[Website](https://kentonishi.github.io/Stack-Trace-Visualizer/)
 
 [Download JAR](https://github.com/kentonishi/Stack-Trace-Visualizer/releases/latest/download/StackTraceVisualizer.jar)
 
