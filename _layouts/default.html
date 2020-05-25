@@ -12,12 +12,6 @@
         gtag('config', '{{ site.google_analytics }}');
     </script>
     {% endif %}
-    <script>
-        document.title = `
-        {{ page.title | default: site.title | default: site.github.repository_name }} -
-        {{ page.description | default: site.description | default: site.github.project_tagline }}
-        `;
-    </script>
     <meta charset="UTF-8">
 
     {% seo %}
@@ -30,7 +24,7 @@
 
 <body>
     <header class="page-header" role="banner">
-        <h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
+        <h1 class="project-name"></h1>
         <h2 class="project-tagline">
             {{ page.description | default: site.description | default: site.github.project_tagline }}
         </h2>
@@ -81,3 +75,11 @@
         text-decoration-color: initial;
     }
 </style>
+<script>
+    var repoName = "{{ site.github.repository_name }}".replace(/-/gi, " ");
+    document.title = `
+    ${repoName} -
+    {{ page.description | default: site.description | default: site.github.project_tagline }}
+    `;
+    document.getElementsByClassName("project-name")[0].innerText = repoName;
+</script>
